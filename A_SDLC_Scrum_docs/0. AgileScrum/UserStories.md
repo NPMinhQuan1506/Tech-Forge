@@ -1,74 +1,80 @@
-# 📘 User Stories – Tech-Forge Platform
+# 📘 User Stories – Tech-Forge Platform (Multi-Tech Learning)
 
-## 📌 Introduction
-This document outlines user stories for the Tech-Forge platform – a C# learning and practice web application.  
+## Introduction
+This document outlines user stories for the Tech-Forge platform – a multi-language, multi-topic technology learning and practice web application.
 User stories are written from the perspective of the end-user and serve as inputs for product backlog, sprint planning, and test case development.
 
 ---
 
-## 👨‍🎓 Learner Stories
+## Learner Stories
 
-### US-01 – Browse Tutorials
-As a learner, I want to view a list of tutorials so that I can choose what to learn next.
+### US-01 – Browse Learning Tracks
+As a learner, I want to view available learning tracks (e.g., C#, Python, JavaScript, Algorithms, Design Patterns) so that I can choose my learning path.
 
-### US-02 – Read Tutorial Content
-As a learner, I want to read structured tutorials with code examples and images so that I can understand concepts clearly.
+### US-02 – View Tutorials by Language & Topic
+As a learner, I want to explore tutorials by programming language, design pattern, system design, or algorithm so that I can focus on specific areas.
 
-### US-03 – Practice Coding in Browser
-As a learner, I want to write and run C# code in the browser so that I can validate what I’ve learned immediately.
+### US-03 – Read Structured Tutorials
+As a learner, I want to read tutorials with clear sections, examples, and visuals so that I can easily understand technical topics.
 
-### US-04 – Submit Exercises with Test Cases
-As a learner, I want to solve coding exercises and check my results using predefined test cases so that I can improve my problem-solving skills.
+### US-04 – Practice Code in Browser
+As a learner, I want to write and run code in multiple languages (C#, Python, JS...) directly in the browser so that I can test my understanding.
 
-### US-05 – Track My Learning Progress
-As a learner, I want to see my progress, completed tutorials, and solved exercises so that I can stay motivated.
+### US-05 – Solve Exercises with Test Cases
+As a learner, I want to attempt exercises with automated test cases so that I can receive instant feedback.
 
----
-
-## 👨‍🏫 Admin Stories
-
-### US-06 – Create/Edit Tutorials
-As an admin, I want to create and update tutorials with Markdown content and images so that learners have access to quality material.
-
-### US-07 – Manage Coding Exercises
-As an admin, I want to add or update exercises including code templates, test cases, and difficulty levels so that learners can practice effectively.
-
-### US-08 – Control Content Visibility
-As an admin, I want to enable, disable, or schedule visibility for tutorials and exercises so that I can manage content lifecycle.
+### US-06 – Track My Progress by Topic
+As a learner, I want to track my progress across different languages and topics so that I stay motivated and organized.
 
 ---
 
-## 🔐 User Authentication & Profile
+## Admin / Instructor Stories
 
-### US-09 – Register & Log In
-As a user, I want to create an account or sign in so that my progress and submissions are saved.
+### US-07 – Create/Edit Tutorials by Tag
+As an admin, I want to create and edit tutorials categorized by language, difficulty, and topic so that content is well-structured.
 
-### US-10 – View & Update Profile
-As a user, I want to view and edit my personal profile so that I can manage my information.
+### US-08 – Manage Practice Problems
+As an admin, I want to manage exercises including language-specific templates, test cases, and tags so that learners can practice efficiently.
 
----
-
-## 🧪 Submission & Feedback
-
-### US-11 – View Submission History
-As a learner, I want to view my past submissions and results so that I can review my mistakes and learn from them.
+### US-09 – Moderate and Organize Content
+As an admin, I want to control visibility, order, and categorization of tutorials and exercises so that the content remains relevant and curated.
 
 ---
 
-## 💡 Backlog Candidates (Future Features)
+## User Authentication & Profile
 
-### US-12 – Comment on Tutorials
-As a learner, I want to post comments or questions under tutorials so that I can interact with the community.
+### US-10 – Register & Log In
+As a user, I want to register or log in to the platform so that my activity and progress are saved.
 
-### US-13 – Earn Badges
-As a learner, I want to earn badges based on completed lessons or milestones so that I feel rewarded.
+### US-11 – View & Update Profile
+As a user, I want to update my name, bio, preferred tech stacks, and avatar so that I can personalize my experience.
 
-### US-14 – Export Tutorials to PDF
-As a learner, I want to download tutorials as PDF so that I can learn offline.
+---
+
+## Submission & Feedback
+
+### US-12 – View Submission History
+As a learner, I want to review my previous code submissions and results so that I can learn from past mistakes.
+
+---
+
+## Backlog Candidates (Future Features)
+
+### US-13 – Community Discussion
+As a learner, I want to post questions or comments under each lesson so that I can learn with others.
+
+### US-14 – Earn Achievements
+As a learner, I want to earn achievements when I complete tutorials or solve exercises so that I feel rewarded.
+
+### US-15 – Export Content to PDF
+As a learner, I want to download tutorials as PDF so that I can study offline.
+
+### US-16 – Personalized Recommendations
+As a learner, I want to receive suggestions based on my history and preferences so that I can discover relevant topics.
 
 ---
 
 ## ✅ Notes
-- All user stories are labeled with `US-XX` and grouped by user roles.
-- Priority, estimate, and MoSCoW status are tracked in `ProductBacklog.xlsx`.
-- Acceptance Criteria for each story may be documented separately or in task details.
+- Topics span multiple programming languages, tech domains, and difficulty levels.
+- Backlog, MoSCoW priority, and story estimates are maintained in ProductBacklog.xlsx.
+- Acceptance Criteria can be tracked separately per sprint or task.
