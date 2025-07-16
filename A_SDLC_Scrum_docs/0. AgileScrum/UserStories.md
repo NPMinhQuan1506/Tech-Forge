@@ -12,7 +12,7 @@ User stories are written from the perspective of the end-user and serve as input
 As a learner, I want to view available learning tracks (e.g., C#, Python, JavaScript, Algorithms, Design Patterns) so that I can choose my learning path.
 
 ### US-02 – View Tutorials by Language & Topic
-As a learner, I want to explore tutorials by programming language, design pattern, system design, or algorithm so that I can focus on specific areas.
+As a learner, I want to explore tutorials by programming language, design pattern, system design, algorithm or technology sharing blog posts so that I can focus on specific areas.
 
 ### US-03 – Read Structured Tutorials
 As a learner, I want to read tutorials with clear sections, examples, and visuals so that I can easily understand technical topics.
@@ -74,7 +74,7 @@ As a learner, I want to receive suggestions based on my history and preferences 
 
 ---
 
-## ✅ Notes
+## Notes
 - Topics span multiple programming languages, tech domains, and difficulty levels.
 - Backlog, MoSCoW priority, and story estimates are maintained in ProductBacklog.xlsx.
 - Acceptance Criteria can be tracked separately per sprint or task.
