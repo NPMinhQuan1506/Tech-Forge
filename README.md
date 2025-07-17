@@ -1,36 +1,39 @@
-# ⚙️ Tech-Forge
+# 🧠 Tech-Forge – Computer Science Learning Platform
 
-**Tech-Forge** is a programming learning platform that combines theory and practice. Learners can explore technical topics such as C#, JavaScript, algorithms, design patterns, system design, and practice directly in the browser.
+Tech-Forge is a modern web-based platform for learning and practicing topics in computer science.  
+It offers tutorials, coding exercises, and interactive challenges across a wide range of subjects such as:
 
 This project was built in 7 days following Agile/Scrum methodology—as a hands-on "tech forge" for learning, coding, and designing a professional software development process.
 
----
+- Programming Languages (C#, Python, JavaScript, etc.)
+- Software Engineering (Design Patterns, System Design)
+- AI & Machine Learning (Coming soon)
+- Libraries & Frameworks
+- Business Analysis & Product Thinking
+- UX/UI and Visual Design (Planned)
 
-## ✨ Main Features
+## Key Features
 
-- View tutorials with sample code and illustrations
-- Run code directly in the browser (similar to a mini LeetCode)
-- Solve exercises with test cases, get instant feedback, and save results
-- Track learning progress and submission history
-- Admins can create new lessons and manage content
-- Clean interface optimized for learner experience
+### For Learners
+- Browse structured tutorials with code, visuals, and explanations
+- Practice with coding exercises and instant test case validation (like LeetCode)
+- Earn points, climb ranks, and track topic-wise progress
+- Personalized user account with profile and history
 
----
+### For Admins
+- Add/edit tutorials with Markdown + images
+- Manage exercises (code templates, test cases, tags)
+- Control visibility and categorize content
 
-## 🧱 Technology Stack
+## Tech Stack
 
-- Frontend: ReactJS, Tailwind CSS, Monaco Editor (VSCode-like)
-- Backend: ASP.NET Core API
-- Database:
-  - MongoDB (stores tutorials & exercises)
-  - PostgreSQL / SQL Server (stores users, submissions)
-- Authentication: JWT, ASP.NET Identity
-- CI/CD: Docker, GitHub Actions (optional for future expansion)
+- **Frontend**: ReactJS + TailwindCSS
+- **Backend**: .NET Core 6 (RESTful API)
+- **Database**: SQL Server
+- **Deployment**: VPS with CI/CD
 
----
-
-## 📂 Folder Structure
-
+## Project Structure (simplified)
+```
 Tech-Forge/
 ├── frontend/        # React UI
 ├── backend/         # .NET Core API
@@ -42,8 +45,11 @@ Tech-Forge/
 │       └── MoSCoW_Priorities.xlsx
 ├── docker-compose.yml
 └── README.md
+```
 
----
+## 🚀 Deployment
+The platform will be deployed to a self-managed VPS and configured with environment-specific settings using `.env` files and Docker if needed.
+
 
 ## 🛠️ How to Run Locally
 
