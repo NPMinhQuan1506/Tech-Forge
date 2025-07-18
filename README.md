@@ -3,6 +3,8 @@
 Tech-Forge is a modern web-based platform for learning and practicing topics in computer science.  
 It offers tutorials, coding exercises, and interactive challenges across a wide range of subjects such as:
 
+This project was built in 7 days following Agile/Scrum methodology—as a hands-on "tech forge" for learning, coding, and designing a professional software development process.
+
 - Programming Languages (C#, Python, JavaScript, etc.)
 - Software Engineering (Design Patterns, System Design)
 - AI & Machine Learning (Coming soon)
@@ -33,12 +35,26 @@ It offers tutorials, coding exercises, and interactive challenges across a wide 
 ## Project Structure (simplified)
 ```
 Tech-Forge/
-├── frontend/       # React app
-├── backend/        # .NET Core API
-├── docs/           # Documentation
-├── scripts/        # Deployment scripts
+├── frontend/        # React UI
+├── backend/         # .NET Core API
+├── docs/
+│   └── 0_AgileScrum/
+│       ├── SprintPlan.md
+│       ├── UserStories.md
+│       ├── ProductBacklog.xlsx
+│       └── MoSCoW_Priorities.xlsx
+├── docker-compose.yml
 └── README.md
 ```
 
 ## 🚀 Deployment
 The platform will be deployed to a self-managed VPS and configured with environment-specific settings using `.env` files and Docker if needed.
+
+
+## 🛠️ How to Run Locally
+
+1. Clone the repository
+```bash
+git clone https://github.com/your-username/tech-forge.git
+cd tech-forge
+```
