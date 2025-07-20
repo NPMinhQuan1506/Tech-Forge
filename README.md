@@ -75,7 +75,7 @@ The product is a **learning galaxy with 3 distinct phases**, each tailored to di
 
 ## 📦 Project Status
 
-This is an MVP built using a 7-day solo Agile sprint with full SDLC phases:
+I will build an MVP using a 7-day solo Agile sprint, covering all phases of the SDLC:
 - Planning → Requirement Analysis → Design → Implementation → Testing → Deployment
 
 ---

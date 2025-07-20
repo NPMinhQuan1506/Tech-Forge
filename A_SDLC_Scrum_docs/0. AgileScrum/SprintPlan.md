@@ -1,132 +1,134 @@
-# Sprint Plan – Tech-Forge (7-Day Solo Agile Sprint)
+# 🚀 Sprint Plan – Tech-Forge (7-Day Solo Agile Sprint)
 
-## Overview
-This sprint plan outlines the work to be done in 7 consecutive days for building the Tech-Forge platform MVP using Agile methodology.
+## 🧭 Overview
+This sprint plan defines a focused solo Agile development sprint to build the MVP for **Tech-Forge**, a gamified learning platform for computer science. It follows full SDLC phases and includes essential deliverables for each stage.
 
-## Goals
-- Deliver a functioning web platform for tech tutorials and coding practice
-- Cover core user stories including content browsing, login, coding editor, and progress tracking
+### 🗓 Sprint Duration
+**July 16 – July 23**
 
-## Timeline
-- This sprint runs from July 16 to July 23.
-
-## Schedule
-# 📅 7-Day Development Plan – SDLC-Based
-
-> **Project Name**: [Your Project]  
-> **Type**: Web Learning Platform (C#/React)  
-> **Goal**: Complete MVP in 7 days using the SDLC process
+### 🎯 Sprint Goals
+- Build an MVP of the Tech-Forge platform  
+- Cover Tutorial Library, Roadmap tracking, code practice, and basic gamification  
+- Deliver core user experience: learning, progression, submission, and tracking
 
 ---
 
-## 🗓️ Day 1 – Planning & Requirement Analysis
+## 📅 7-Day SDLC-Based Development Plan
+
+### 🟩 Day 1 – Planning & Requirement Analysis
 
 **Objectives:**
-- Define project scope and goals  
-- Gather and analyze user & business requirements  
-- Prepare the initial sprint plan
+- Clarify product vision and user value
+- Define user journeys and system boundaries
+- Draft Agile backlog and use cases
 
 **Deliverables:**
-- `README.md` – Project overview, key features, tech stack  
-- `UserStories.md` – User stories in Agile format  
-- `ProductBacklog.xlsx` – Detailed product backlog with prioritization  
-- `SprintPlan.md` – 7-day sprint breakdown and task plan  
-- `BFD.drawio` – Business Flow Diagram (illustrates core business process)  
-- `UseCaseDiagram.drawio` – Use Case diagram (UML)  
-- `UseCaseDescriptions.docx` – Descriptions of each use case (actors, flows, pre/post-conditions)
+- `README.md` – Product vision, features, tech stack  
+- `SprintPlan.md` – This sprint document  
+- `UserStories.md` – Core user stories (Agile format)  
+- `ProductBacklog.xlsx` – Backlog with MoSCoW prioritization  
+- `BFD.drawio` – Business Function Diagram  
+- `UseCaseDiagram.drawio` – Use Case UML  
+- `UseCaseDescriptions.docx` – Use case narratives (actors, flow, pre/post-conditions)
 
 ---
 
-## 🗓️ Day 2 – System Design
+### 🟦 Day 2 – System Design
 
 **Objectives:**
-- Design system architecture  
-- Create database, class, and process diagrams  
-- Sketch out UI wireframes
+- Design overall architecture (Clean + Monolith-first)
+- Model domain entities, flows, and UI
+- Prepare system for future modularization
 
 **Deliverables:**
-- `BRD.docx` – Business Requirement Document  
-- `FRD.docx` – Functional Requirement Document  
-- `NFR.docx` – Non-Functional Requirements (security, performance, scalability)  
-- `ERD.drawio` – Entity Relationship Diagram (data model)  
-- `ClassDiagram.drawio` – UML Class Diagram  
-- `SequenceDiagram.drawio` – Sequence diagram for major flows  
-- `Wireframes.pdf/png` – UI wireframes or mockups (Figma/sketches)
+- `ArchitectureDiagram.drawio` – High-level system architecture  
+- `BRD.docx` – Business Requirements Document  
+- `FRD.docx` – Functional Requirements  
+- `NFR.docx` – Non-functional requirements (performance, security...)  
+- `ERD.drawio` – Entity Relationship Diagram  
+- `ClassDiagram.drawio`, `SequenceDiagram.drawio` – UML interactions  
+- `Wireframes.pdf` – UI wireframes or sketches  
+- `API_Spec.yaml` – OpenAPI/Swagger contract  
 
 ---
 
-## 🗓️ Day 3 – Auth System & Project Setup
+### 🟧 Day 3 – Project Setup & Auth System
 
 **Objectives:**
-- Scaffold frontend/backend source structure  
-- Implement authentication system (Register/Login/Profile)  
-- Setup database and perform initial migration
+- Scaffold project structure (Frontend + Backend)
+- Setup database and CI/CD skeleton
+- Build user authentication system
 
 **Deliverables:**
-- Source scaffolding (React + .NET Core or backend of choice)  
-- Auth API (JWT or session-based)  
-- UI for login, register, and user profile  
-- Database migration: `User`, `Role`, `Token`, etc.
+- React + .NET source folder structure  
+- Auth module: register/login/profile (JWT)  
+- User schema, roles, tokens  
+- `.env.sample`, `docker-compose.yml`  
+- Initial migration scripts  
 
 ---
 
-## 🗓️ Day 4 – Tutorials Module
+### 🟨 Day 4 – Tutorials Module (Phase 1)
 
 **Objectives:**
-- Build theory-based tutorials module
+- Implement public browsing of tutorials and lessons
+- Enable reading + discovery point earning
 
 **Deliverables:**
-- Tutorial list/detail UI  
-- Backend API for tutorial management (CRUD)  
-- Database: `Tutorial`, `Topic`, `Lesson` schemas  
-- Unit tests for key APIs
+- UI for browsing topics and lessons  
+- Backend CRUD APIs: Tutorial, Topic, Lesson  
+- DiscoveryPoint system  
+- Unit tests for lesson APIs  
+- Integrated DB schemas  
 
 ---
 
-## 🗓️ Day 5 – Code Practice Module
+### 🟨 Day 5 – Code Practice Module
 
 **Objectives:**
-- Integrate an in-browser code editor  
-- Auto-evaluate user submissions with test cases
+- Add coding editor for exercises
+- Implement code evaluation and submission logic
 
 **Deliverables:**
-- Monaco Editor (or similar) UI integration  
-- Backend code runner API (via Docker or secure sandbox)  
-- Database: `Exercise`, `TestCase`, `Submission`  
-- Store submission results + pass/fail evaluation
+- Monaco/CodeMirror in-browser editor  
+- `Exercise`, `TestCase`, `Submission` entities  
+- CodeRunner service (Dockerized or sandboxed)  
+- Store pass/fail result + user feedback  
 
 ---
 
-## 🗓️ Day 6 – Progress Tracking & Testing
+### 🟪 Day 6 – Roadmap Module + Testing
 
 **Objectives:**
-- Track learning progress and user submissions  
-- Perform functional testing and bug reporting
+- Enable Roadmap exploration and progress tracking  
+- Validate key features via testing
 
 **Deliverables:**
-- UI for submission history and point tracking  
-- `TestCases.xlsx` – List of manual/automated test cases  
-- `BugList.md` – Bugs found during testing and their status  
-- Unit tests and basic integration tests
+- Join roadmap flow  
+- Unlock lessons and EXP gain  
+- UI for user roadmap progress  
+- `TestCases.xlsx` – Manual/automated tests  
+- `BugList.md` – Defects and resolutions  
 
 ---
 
-## 🗓️ Day 7 – Deployment & Final Documentation
+### 🟥 Day 7 – Deployment & Final Documentation
 
 **Objectives:**
-- Deploy system to VPS or cloud  
-- Write complete technical and user documentation
+- Deploy to production (VPS/Render/Vercel)  
+- Finalize all user-facing and developer docs
 
 **Deliverables:**
-- Live deployment on VPS / Render / Vercel / Railway  
-- `UserGuide.md` – How to use the system (end-user manual)  
-- `InstallationGuide.md` – How to set up project (dev/prod)  
-- `API_Documentation.md` – Swagger or manual API docs  
-- `FinalTestReport.md` – Test summary and final QA checklist
+- Live deployment  
+- `InstallationGuide.md` – Setup instructions  
+- `UserGuide.md` – Platform usage guide  
+- `API_Documentation.md` – Swagger/Markdown API docs  
+- `FinalTestReport.md` – QA report  
 
 ---
 
-## Notes
-- Priority follows MoSCoW model
-- Tasks estimated in story points
-- Everything tracked via this plan + ProductBacklog.xlsx
+## 🔖 Notes
+- **Sprint Model**: Solo Agile with SDLC  
+- **Architecture**: Clean Architecture + Monolith-first  
+- **Tracking**: All tasks managed via `ProductBacklog.xlsx`  
+- **Prioritization**: MoSCoW (Must, Should, Could, Won’t)

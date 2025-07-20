@@ -1,84 +1,169 @@
-# 📘 User Stories – Tech-Forge Platform (Computer Science Learning)
+# 📘 User Stories – Tech-Forge Platform (Gamified CS Learning)
 
 ## Introduction
-This document defines the user stories for the Tech-Forge platform — an interactive, multi-language web application designed for learning and practicing computer science topics.
 
-The user stories are written from the perspective of different user roles (learners, admins, etc.), and will serve as the foundation for the product backlog, sprint planning, and acceptance testing.
-
----
-
-## Learner Stories
-
-### US-01 – Browse Learning Roadmaps
-As a learner, I want to view structured learning roadmaps (e.g., Programming, Algorithms, System Design) so that I can follow a guided path.
-
-### US-02 – Explore Tutorials by Category
-As a learner, I want to browse tutorials by language (e.g., C#, Python), topic (e.g., AI, Design Patterns), or blog posts so that I can focus on areas I care about.
-
-### US-03 – Read Interactive Tutorials
-As a learner, I want to read tutorials that include examples, visuals, and explanations so that I can understand concepts clearly.
-
-### US-04 – Practice Code in Browser
-As a learner, I want to write and run code in the browser (multi-language) so that I can apply what I’ve learned instantly.
-
-### US-05 – Solve Exercises with Evaluation
-As a learner, I want to solve coding problems with automated test cases so that I receive instant feedback.
-
-### US-06 – Track My Progress and Ranking
-As a learner, I want to track my learning completion rate and earn points or ranks so that I stay motivated.
-
-### US-07 – View My Submissions
-As a learner, I want to review my past answers and test case results so that I can reflect and improve.
+This document captures the core user stories derived from the vision and system defined in the README. Stories are grouped by platform phase (Tutorial Library, Roadmap, Course) and by user roles (Learner, Admin). These will guide backlog planning and development sprints.
 
 ---
 
-## 🛠️ Admin / Instructor Stories
+## 📖 Phase 1: Tutorial Library (Free Exploration)
 
-### US-08 – Create and Edit Tutorials
-As an admin, I want to add or update tutorials using Markdown with support for tags and media so that content is rich and structured.
+### US-01 – Browse Topics
 
-### US-09 – Manage Practice Exercises
-As an admin, I want to define coding problems with language-specific templates, test cases, and tags so that learners can practice effectively.
+As a guest or registered user, I want to explore topics grouped by field (e.g., Languages, System Design, AI) so that I can study freely.
 
-### US-10 – Moderate System Content
-As an admin, I want to control content visibility, ordering, and roadmap assignments so that the system remains clean and organized.
+### US-02 – View Lessons
 
----
+As a user, I want to view structured lessons with tags, levels, and themes so that I can understand and navigate the content.
 
-## User Authentication & Profile
+### US-03 – Read Without Login
 
-### US-11 – Register and Log In
-As a user, I want to sign up or log in so that my progress and activities are saved.
+As a user, I want to access tutorials without needing an account so that I can learn without friction.
 
-### US-12 – Edit My Profile
-As a user, I want to update my bio, avatar, and tech preferences so that I can personalize my experience.
+### US-04 – Earn Discovery Points
 
----
+As a user, I want to earn discovery points when reading tutorials or trying sample exercises so that I feel rewarded.
 
-## Submission & Feedback
+### US-05 – View Public Exercise Samples
 
-### US-13 – View Submission History
-As a learner, I want to review my previous submissions, verdicts, and scores so that I can monitor my learning outcomes.
+As a user, I want to try sample exercises attached to lessons to evaluate my understanding.
 
 ---
 
-## Backlog Candidates (Future Features)
+## 🧭 Phase 2: Roadmaps (Guided Progression)
 
-### US-14 – Community Discussion
-As a learner, I want to comment or ask questions under tutorials so that I can engage with others.
+### US-06 – Explore Available Roadmaps
 
-### US-15 – Earn Achievements
-As a learner, I want to collect badges or achievements when completing lessons or challenges so that I feel rewarded.
+As a learner, I want to explore curated roadmaps (e.g., AI Engineer, Backend Dev) so that I can pick a learning path.
 
-### US-16 – Export Tutorials as PDF
-As a learner, I want to export tutorials into PDF format so that I can learn offline.
+### US-07 – Join Roadmap
 
-### US-17 – Personalized Content Suggestions
-As a learner, I want to receive content recommendations based on my behavior so that I can discover relevant topics.
+As a registered user, I want to join a roadmap so that my progress can be tracked.
+
+### US-08 – View Selected Lessons Only
+
+As a learner, I want to only see roadmap-specific lessons within each topic so that I stay focused on the goal.
+
+### US-09 – Unlock Lessons and Challenges
+
+As a learner, I want to unlock new lessons and exercises as I progress in a roadmap so that I remain motivated.
+
+### US-10 – Face Boss Quizzes
+
+As a learner, I want to face boss-level quizzes after completing sections so that I can test mastery.
+
+### US-11 – Track EXP and Rank
+
+As a learner, I want to earn EXP and gain ranks through roadmap progress so that I can level up.
+
+### US-12 – Earn Free Points and Rewards
+
+As a learner, I want to collect free points for completing lessons or challenges so I can redeem items.
+
+---
+
+## 🧠 Phase 3: Courses (Premium Mastery)
+
+### US-13 – Browse Courses
+
+As a user, I want to browse available premium courses with descriptions, tiers, and prices so I can choose wisely.
+
+### US-14 – Join Course with Earn Points
+
+As a learner, I want to spend earn points to join a course so that I can access exclusive content.
+
+### US-15 – Take Entry Quiz
+
+As a course participant, I want to take an entry quiz to assess my level before starting.
+
+### US-16 – View Exclusive Content
+
+As a course member, I want to access special lessons and exercises not available elsewhere.
+
+### US-17 – Progress Through Course Path
+
+As a learner, I want my course content to adapt based on my performance so that my learning is personalized.
+
+### US-18 – Earn Titles, EXP, and Items
+
+As a learner, I want to gain rewards such as ranks, titles, or items to reflect my mastery.
+
+### US-19 – Receive Earn Points for Performance
+
+As a learner, I want to be rewarded with earn points if I perform well in a course so I feel motivated.
+
+### US-20 – Access Special Events
+
+As a high achiever, I want to unlock access to special challenges (e.g., dungeons, AI boss fights) for rare items.
+
+---
+
+## 🎮 Gamification and System Features
+
+### US-21 – Submit Exercises
+
+As a learner, I want to submit my code and get automatic feedback so I know if I passed.
+
+### US-22 – View Submission History
+
+As a learner, I want to review my past submissions and scores so I can improve.
+
+### US-23 – View Profile and Rank
+
+As a user, I want to view my own profile, exp, rank, and badges.
+
+### US-24 – Penalty Rules Enforcement
+
+As a system, I want to demote, ban, or penalize users violating rules.
+
+### US-25 – Create and Share Roadmap
+
+As a registered user, I want to create and share my own roadmap with the public so I can contribute.
+
+### US-26 – Review and Clone Roadmaps
+
+As a user, I want to review, star, and clone roadmaps made by others.
+
+### US-27 – Leaderboards
+
+As a user, I want to see leaderboards by points, stars, or rank.
+
+### US-28 – Face Sacred Challenge Quests
+
+As a top learner, I want to challenge legendary tests representing human wisdom.
+
+---
+
+## 🛠️ Admin Stories
+
+### US-29 – Manage Lessons and Tutorials
+
+As an admin, I want to create, edit, and tag tutorials.
+
+### US-30 – Manage Exercises and Test Cases
+
+As an admin, I want to create and assign exercises.
+
+### US-31 – Configure Roadmaps and Courses
+
+As an admin, I want to build roadmaps and courses with rules and content mappings.
+
+### US-32 – Manage Users and Points
+
+As an admin, I want to moderate users, adjust points, and enforce rules.
+
+### US-33 – Access Reports and Analytics
+
+As an admin, I want to view user progress, top performers, and roadmap analytics.
+
+### US-34 – Configure Boss Quests and Events
+
+As an admin, I want to build unique events and boss-level assessments.
 
 ---
 
 ## Notes
-- Topics cover languages, algorithms, design patterns, system design, AI, and more.
-- MoSCoW prioritization, story estimates, and sprint assignments are tracked in `ProductBacklog.xlsx`.
-- Detailed acceptance criteria may be documented per story or during sprint task planning.
+
+* Stories will be broken down into subtasks for sprint planning.
+* MoSCoW priorities and estimates live in `ProductBacklog.xlsx`
+* Some advanced features are Phase 2+ or backlog candidates for future sprints.
