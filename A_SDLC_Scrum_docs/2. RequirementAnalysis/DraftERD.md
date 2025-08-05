@@ -1,0 +1,105 @@
+# User & Identity
+1. MLTF_Guest
+2. MLTF_User (ID, Code, Name, Bio, AliasName, Avatar, Email, GenderID, BirthDay, Phone, Phone2, PhoneCodeID, Address, WardID. DistrictID, CityID, CountryID, NationalID, SchoolID, CareerID, JobTitleID, EducationID, Username, PasswordHash, GoogleID, SourceID, GroupID, TypeID, RankID, AccessFailedCount, LockoutEnd, TwoFactorEnabled, SecurityStamp, LastSignIn, IsLife, Note, Created, Modified, State, Searchable, NumCreated, NumLastModified, NumLastSignIn)
+3. MLTF_UserSource
+4. MLTF_UserSource_Detail
+5. MLTF_UserType
+6. MLTF_UserOAuth2
+# Core Learning 
+7. MLTF_Topic
+8. MLTF_Lesson
+9. MLTF_TopicGroup
+10. MLTF_LessonGroup
+11. MLTF_LessonTag
+12. MLTF_LessonLevel
+13. MLTF_ExerciseTemplate
+14. MLTF_ExerciseTemplate_Detail
+15. MLTF_ExerciseTemplate_TestCase
+16. MLTF_Exam
+17. MLTF_Exam_Detail
+18. MLTF_Exam_Answer
+# Learning Path
+19. MLTF_RoadMap
+20. MLTF_RoadMap_Lesson
+21. MLTF_RoadMap_Exercise
+22. MLTF_RoadMap_Exam
+23. MLTF_Course
+24. MLTF_Course_Lesson
+25. MLTF_Course_Exercise
+26. MLTF_Course_Exam
+# User Progress
+27. MLTF_User_RoadMap
+28. MLTF_User_RoadMap_Detail
+29. MLTF_User_RoadMap_Exercise
+30. MLTF_User_RoadMap_Submission
+31. MLTF_User_RoadMap_Exam
+32. MLTF_User_RoadMap_Exam_Detail
+33. MLTF_User_Course
+34. MLTF_User_Course_Detail
+35. MLTF_User_Course_Exercise
+36. MLTF_User_Course_Submission
+37. MLTF_User_Course_Exam
+38. MLTF_User_Course_Exam_Detail
+# Gamification & Community
+39. MLTF_MemberRank
+40. MLTF_Certificate
+41. MLTF_Certificate_RankCondition
+42. MLTF_Certificate_Condition
+43. MLTF_Reward
+44. MLTF_User_RedeemRewards
+45. MLTF_User_IssueDiscuss
+46. MLTF_User_IssueDiscuss_Detail
+47. MLTF_User_RoadMap_Share
+48. MLTF_User_RoadMap_ShareRating
+# E-Commerce
+49. MLTF_Product
+50. MLTF_ProductType
+51. MLTF_ProductUnit
+52. MLTF_ProductUnit_Redeem
+53. MLTF_ProductSource
+54. MLTF_Supplier
+55. MLTF_Customer_Order
+56. MLTF_Customer_Order_Detail
+57. MLTF_Customer_Payment
+58. MLTF_Customer_Payment_Detail
+59. MLTF_Discount
+60. MLTF_Discount_Detail
+61. MLTF_Customer_Wallet
+62. MLTF_Customer_Wallet_Transaction
+# System logs & Auditing
+63.  MLTF_User_Log
+64.  MLTF_User_LogType
+# Internal & Admin System
+65.  MLTF_MS_Company
+66.  MLTF_MS_Employee
+67.  MLTF_MS_Employee_Group
+68.  MLTF_MS_Employee_Department
+69.  MLTF_MS_Employee_Role
+70.  MLTF_MS_Employee_GroupRole
+71.  MLTF_MS_UserAccount
+72.  MLTF_MS_SettingClient_Display
+73.  MLTF_MS_SettingClient_Option
+74. MLTF_MS_Setting_Option
+75. MLTF_MS_Menu
+76. MLTF_MS_MenuGroup
+77. MLTF_MS_UserMenu_Allow
+78. MLTF_MS_Control
+79. MLTF_MS_UserControl_Block
+# Master Data / Catalog
+80.  MLTF_MS_Catalog_Gender
+81.  MLTF_MS_Catalog_National
+82.  MLTF_MS_Catalog_National
+83.  MLTF_MS_Catalog_Country
+84.  MLTF_MS_Catalog_City
+85.  MLTF_MS_Catalog_Ward
+86.  MLTF_MS_Catalog_Street
+87.  MLTF_MS_Catalog_Career
+88.  MLTF_MS_Catalog_JobTitle
+89.  MLTF_MS_Catalog_School
+90. MLTF_MS_Catalog_School_Type
+91. MLTF_MS_Catalog_PhoneCode
+92. MLTF_MS_Catalog_PaymentMethod
+93. MLTF_MS_Catalog_PaymentMethod_Detail
+94. LTF_MS_Catalog_Bank
+95. MLTF_MS_Catalog_BankBranch
+96. MLTF_MS_Catalog_OAuth_Supplier
