@@ -11,11 +11,11 @@
 10. MLTF_LessonGroup (ID, Name, Note, Created, CreatedBy, Modified, ModifiedBy, State)
 11. MLTF_LessonTag (ID, Name, Note, Created, CreatedBy, Modified, ModifiedBy, State)
 12. MLTF_LessonLevel (ID, Name, Note, Created, CreatedBy, Modified, ModifiedBy, State)
-13. MLTF_ExerciseTemplate (ID, Code, Name, Description, ExamplePoint, Note, Created, CreatedBy, Modified, ModifiedBy, State)
-14. MLTF_ExerciseTemplate_Detail (ID, ParentID, Name, Description, Content, ItemPoint, Note, Created, CreatedBy, Modified, ModifiedBy, State)
-15. MLTF_ExerciseTemplate_TestCase (ID, ParentID, Type, Value,, ItemPoint, Note, Created, CreatedBy, Modified, ModifiedBy, State)
-16. MLTF_Exam
-17. MLTF_Exam_Detail
+13. MLTF_ExerciseTemplate (ID, Code, Name, Description, ReferencePoint, LessonID, Note, Created, CreatedBy, Modified, ModifiedBy, State)
+14. MLTF_ExerciseTemplate_Detail (ID, ParentID, Name, Description, Content, ItemPoint, Type, Note, Created, CreatedBy, Modified, ModifiedBy, State)
+15. MLTF_ExerciseTemplate_TestCase (ID, ExerciseID, Type, Value, ItemPoint, Note, Created, CreatedBy, Modified, ModifiedBy, State)
+16. MLTF_ExamTemplate (ID, TopicID, Code, Description, Note, Created, CreatedBy, Modified, ModifiedBy, State)
+17. MLTF_ExamTemplate_Detail
 18. MLTF_Exam_Answer
 19. MLTF_User_TrackingLesson
 20. MLTF_RoadMap **# Learning Path**
