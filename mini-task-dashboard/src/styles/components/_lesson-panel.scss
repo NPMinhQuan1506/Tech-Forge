@@ -1,0 +1,32 @@
+@use "../abstracts/mixins" as *;
+@use "../abstracts/variables" as *;
+
+.lesson-panel {
+  @include panel;
+  padding: $space-xl;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: $space-lg;
+  }
+}
+
+.lesson-card {
+  @include panel;
+  padding: $space-lg;
+
+  p {
+    margin-top: $space-sm;
+    color: $color-text-soft;
+  }
+
+  pre {
+    overflow-x: auto;
+    margin-top: $space-md;
+    padding: $space-md;
+    border-radius: $radius-sm;
+    background: $color-surface-strong;
+    color: #e2e8f0;
+  }
+}

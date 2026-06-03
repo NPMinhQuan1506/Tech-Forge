@@ -1,0 +1,43 @@
+@use "../abstracts/variables" as *;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+pre {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fbff 0%, $color-bg 100%);
+  color: $color-text;
+}
+
+body,
+button,
+input,
+textarea {
+  font-family: $font-body;
+}
+
+ul {
+  padding-left: 18px;
+}
+
+code,
+pre {
+  font-family: Consolas, "Courier New", monospace;
+}

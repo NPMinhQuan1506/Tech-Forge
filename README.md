@@ -1,85 +1,92 @@
-# 🌌 Tech-Forge: The Open Universe of Computer Science Learning
+# Tech-Forge Learning Branch
 
-Tech-Forge is a gamified learning platform for mastering computer science through structured tutorials, guided roadmaps, and dynamic courses — all wrapped in a universe of discovery, competition, and collaboration.
+Branch nay duoc dung de hoc va thuc hanh:
 
----
+- TypeScript
+- SCSS / CSS
+- React co type ro rang
+- Cach dua tung concept vao mot app nho that
 
-## 💡 Original Vision – The Founder's Story
+## Muc tieu cua branch nay
 
-> “I wanted a system that not only tracks what I learn but also lets me share my knowledge with others — my teammates, juniors, or friends.  
-> What I envisioned is a gamified universe where learning, exploration, and contribution coexist.”  
+Khong hoc TypeScript va SCSS theo kieu chi xem tutorial.
 
-The product is a **learning galaxy with 3 distinct phases**, each tailored to different user motivations:
+Huong hoc o day la:
 
-### 🌐 Phase 1 – Tutorial Library (Free Exploration)
+1. hoc mot concept nho
+2. ap dung ngay vao app
+3. sai thi sua
+4. doc lai code de hieu sau hon
 
-- Explore categorized subjects across the computer science universe: programming languages, system design, design patterns, and more.
-- Each subject includes **topics** (e.g., C#, JavaScript, Python).
-- Each topic contains structured **lessons**, grouped by tags, levels, or themes.
-- Some lessons include sample exercises from the shared exercise bank.
-- Users earn **Discovery Points**, which can be exchanged for badges, items, or bonuses in later phases.
-- Tutorials are public — no account or login required.
-- EXP and rank are *not* gained in this phase — it’s purely for exploration and learning.
+## Project dang dung
 
-### 🧭 Phase 2 – Roadmaps (Guided Progression)
+Repo hien tai chi giu **mot huong hoc chinh**:
 
-- Learners can select a **Roadmap** (e.g., *AI Engineer*, *Fullstack Dev*) to follow a recommended learning path.
-- Each Roadmap includes **selected topics and lessons** relevant to the goal — not full coverage.
-- Special lessons and exercises are **unlockable** only through Roadmap participation.
-- Users earn **EXP**, unlock new phases, and face unique challenges like **boss quizzes** or **hidden gates**.
-- Learning progress is **tracked and visualized** by the system.
-- Users collect **Free Points**, which can be used in the shop or converted into earnable perks.
+- [mini-task-dashboard](./mini-task-dashboard)
 
-### 🧠 Phase 3 – Courses (Premium Mastery)
+Day la app demo de hoc song song:
 
-- Courses are premium learning journeys, unlocked using **Earn Points**.
-- Require pre-tests to evaluate level before joining.
-- Courses contain **exclusive content and exercises**, not accessible in Tutorials or Roadmaps.
-- Include **dynamic paths**, challenges, and mastery-based tests.
-- Rewards: Titles, EXP, rare items, and entry into **story-based special events** (e.g., dungeons with AI bosses).
-- Some learners will receive **Earn Points rewards** for performance.
-- Courses are priced by **value tier**, and tracked by personalized progression.
+- React + Vite
+- TypeScript
+- SCSS
 
----
+## App demo
 
-## 🌀 Extra Systems & Game Elements
+`mini-task-dashboard` la app nho de luyen cac bai hoc that:
 
-- **Penalty Mechanisms**: Users who break platform rules may get rank demotion, connection restrictions, or permanent bans.
-- **Open Source Learning**: Users can create and share Roadmaps publicly. Others can star, review, and clone them.
-- **Leaderboards** and ranking systems recognize top contributors.
-- **7 Sacred Challenges**: Special endgame challenges themed around mythical creatures representing human wisdom — each a unique test of skill and knowledge.
-- **Admin Interface**: Full system control, analytics, content moderation, and event configuration available for employees/admins.
+- hien thi task list
+- task card typed sach
+- layout dashboard
+- sidebar
+- section notes de giai thich concept dang nam o dau trong app
 
----
+Day 1 hien da co:
 
-## 🚀 Tech Stack
+- `type`
+- `interface`
+- `union type`
+- `array type`
+- typed props trong React
+- SCSS variables
+- SCSS nesting
+- flex layout
 
-- **Frontend**: React.js + TailwindCSS
-- **Backend**: .NET 6 Web API
-- **Database**: SQL Server
-- **Containerization**: Docker
-- **Deployment**: VPS (Nginx + CI/CD)
+## Cau truc repo
 
----
+```txt
+Tech-Forge/
+|- README.md
+|- .gitignore
+`- mini-task-dashboard/
+   |- src/
+   |- docs/
+   |- package.json
+   `- ...
+```
 
-## 📂 Project Modules
+## Cach chay project
 
-- Tutorial Library (Read-only public learning)
-- Roadmap Explorer (Progressive paths & gamification)
-- Course Center (Earn-point powered premium programs)
-- Code Editor (Browser coding + test case evaluation)
-- Auth/Profile/Rank/Point System
-- Admin Dashboard (CMS & Analytics)
+```bash
+cd mini-task-dashboard
+npm install
+npm run dev
+```
 
----
+## Cach hoc de hieu nhanh hon
 
-## 📦 Project Status
+Nen doc theo thu tu:
 
-I will build an MVP using a 7-day solo Agile sprint, covering all phases of the SDLC:
-- Planning → Requirement Analysis → Design → Implementation → Testing → Deployment
+1. `mini-task-dashboard/src/types/task.ts`
+2. `mini-task-dashboard/src/data/tasks.ts`
+3. `mini-task-dashboard/src/components/tasks/TaskCard.tsx`
+4. `mini-task-dashboard/src/styles/components/_task-board.scss`
+5. `mini-task-dashboard/docs/day-1-notes.md`
 
----
+## Dinh huong tiep theo
 
-## 📝 License
+Se tiep tuc phat trien cung mot app nay theo roadmap hoc:
 
-This is a personal learning and knowledge-sharing project. Public roadmap and open contribution may be added in the future.
+- Week 1: typed model + layout
+- Week 2: form tao, sua, xoa task
+- Week 3: filter, search, theme, responsive
+- Week 4: localStorage, state polish, reusable typing

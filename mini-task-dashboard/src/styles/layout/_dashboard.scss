@@ -1,0 +1,60 @@
+@use "../abstracts/mixins" as *;
+@use "../abstracts/variables" as *;
+
+.dashboard-shell {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  min-height: 100vh;
+
+  @include respond-down(960px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__sidebar {
+    padding: $space-xl;
+    background: $color-surface-strong;
+
+    @include respond-down(960px) {
+      padding: $space-lg;
+    }
+  }
+
+  &__main {
+    padding: $space-xl;
+
+    @include respond-down(960px) {
+      padding: $space-lg;
+    }
+  }
+
+  &__content {
+    display: grid;
+    gap: $space-xl;
+  }
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+
+  @include respond-down(820px) {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  &__eyebrow {
+    margin-bottom: $space-xs;
+    color: $color-accent;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  &__description {
+    max-width: 60ch;
+    color: $color-text-soft;
+  }
+}

@@ -1,0 +1,45 @@
+@use "../abstracts/mixins" as *;
+@use "../abstracts/variables" as *;
+
+.sidebar-panel {
+  color: #e2e8f0;
+
+  &__eyebrow {
+    color: #93c5fd;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  &__description {
+    margin-top: $space-md;
+    color: #cbd5e1;
+  }
+
+  &__section {
+    @include panel;
+    margin-top: $space-lg;
+    padding: $space-lg;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+
+    &--highlight pre {
+      margin-top: $space-md;
+    }
+  }
+
+  &__list {
+    display: grid;
+    gap: $space-sm;
+    margin-top: $space-md;
+  }
+
+  pre {
+    overflow-x: auto;
+    padding: $space-md;
+    border-radius: $radius-sm;
+    background: rgba(15, 23, 42, 0.9);
+    color: #dbeafe;
+  }
+}

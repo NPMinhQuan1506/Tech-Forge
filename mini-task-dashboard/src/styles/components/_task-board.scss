@@ -1,0 +1,72 @@
+@use "../abstracts/mixins" as *;
+@use "../abstracts/variables" as *;
+
+.task-board {
+  @include panel;
+  padding: $space-xl;
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: $space-lg;
+  }
+}
+
+.task-card {
+  @include panel;
+  padding: $space-lg;
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: $space-sm;
+    color: $color-text-soft;
+    font-size: 0.92rem;
+  }
+
+  &__title {
+    margin-top: $space-md;
+  }
+
+  &__description {
+    margin-top: $space-sm;
+    color: $color-text-soft;
+  }
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 $space-sm;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  &--todo {
+    background: $color-accent-soft;
+    color: $color-accent;
+  }
+
+  &--doing {
+    background: $color-warning-soft;
+    color: $color-warning;
+  }
+
+  &--done {
+    background: $color-success-soft;
+    color: $color-success;
+  }
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+
+  @include respond-down(700px) {
+    grid-template-columns: 1fr;
+  }
+}
