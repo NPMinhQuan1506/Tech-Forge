@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson_display.title }} · PyPath{% endblock %}
+
+{% block content %}
+  <div class="breadcrumbs"><a href="{% url 'learning:home' %}">{{ ui.learning_path }}</a><span>/</span><span>{{ ui.lesson }} {{ lesson.order }}</span></div>
+  <section class="lesson-hero">
+    <div>
+      <p class="eyebrow">{{ ui.lesson }} {{ lesson.order|stringformat:"02d" }} · {{ lesson_display.track }} · {{ lesson.get_level_display }}</p>
+      <h1>{{ lesson_display.title }}</h1>
+      <p>{{ lesson_display.summary }}</p>
+    </div>
+    <div class="lesson-hero__badge"><span>⌘</span><strong>{{ lesson.exercises.all|length }}</strong><small>{{ ui.practice_exercises }}</small></div>
+  </section>
+
+  <div class="content-layout">
+    <article class="lesson-body">
+      <div class="lesson-body__label">{{ ui.lesson_content }}</div>
+      <div class="prose lesson-prose">
+        {% for section in lesson_sections %}
+          <section class="lesson-prose__section{% if section.is_example %} lesson-prose__section--example{% endif %}">
+            <h2>{{ section.title }}</h2>
+            {% if section.is_example %}
+              <pre><code>{{ section.body }}</code></pre>
+            {% else %}
+              <div>{{ section.body|linebreaksbr }}</div>
+            {% endif %}
+          </section>
+        {% endfor %}
+      </div>
+
+      <figure class="lesson-visual" aria-labelledby="lesson-visual-title">
+        <figcaption>
+          <span class="lesson-visual__eyebrow">{{ ui.quick_visual }}</span>
+          <h2 id="lesson-visual-title">{{ learning_visual.title }}</h2>
+          <p>{{ learning_visual.explanation }}</p>
+        </figcaption>
+        <pre aria-label="ASCII diagram">{{ learning_visual.diagram }}</pre>
+      </figure>
+
+      <section class="concept-map" aria-labelledby="concept-map-title">
+        <div class="concept-map__header">
+          <p class="eyebrow">{{ ui.understand_why }}</p>
+          <h2 id="concept-map-title">{{ ui.mental_map }}</h2>
+          <p>{{ ui.concept_intro }}</p>
+        </div>
+        <div class="concept-map__grid">
+          <article class="concept-card concept-card--wide">
+            <span>01</span>
+            <h3>{{ ui.concept_mental_model }}</h3>
+            <p>{{ learning_map.mental_model }}</p>
+          </article>
+          <article class="concept-card">
+            <span>02</span>
+            <h3>{{ ui.concept_pipeline }}</h3>
+            <ol>
+              {% for item in learning_map.pipeline %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ol>
+          </article>
+          <article class="concept-card">
+            <span>03</span>
+            <h3>{{ ui.concept_edge_cases }}</h3>
+            <ul>
+              {% for item in learning_map.edge_cases %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+          <article class="concept-card">
+            <span>04</span>
+            <h3>{{ ui.concept_mistakes }}</h3>
+            <ul>
+              {% for item in learning_map.mistakes %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+          <article class="concept-card">
+            <span>05</span>
+            <h3>{{ ui.concept_practice_loop }}</h3>
+            <ol>
+              {% for item in learning_map.practice_loop %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ol>
+          </article>
+        </div>
+      </section>
+    </article>
+    <aside class="lesson-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-card__heading"><span class="sidebar-card__icon">⌘</span><h2>{{ ui.practice_now }}</h2></div>
+        <p>{{ ui.apply_lesson }}</p>
+        <ol class="exercise-list">
+          {% for exercise in lesson.exercises.all %}
+            <li><a href="{% url 'learning:exercise-detail' exercise.slug %}"><span>{{ forloop.counter|stringformat:"02d" }}</span><strong>{{ exercise.display_title|default:exercise.title }}</strong><i>→</i></a></li>
+          {% empty %}
+            <li class="exercise-list__empty">{{ ui.no_exercises }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+      <a class="back-link" href="{% url 'learning:home' %}">← {{ ui.back_to_path }}</a>
+    </aside>
+  </div>
+{% endblock %}

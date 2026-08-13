@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ui.create_account }} · PyPath{% endblock %}
+
+{% block content %}
+  <section class="auth-shell">
+    <div class="auth-copy"><p class="eyebrow"><span class="live-dot"></span> {{ ui.start_free_eyebrow }}</p><h1>{{ ui.register_heading }}</h1><p>{{ ui.register_description }}</p></div>
+    <article class="auth-card">
+      <div class="auth-card__head"><span class="auth-card__icon">+_</span><h2>{{ ui.create_account }}</h2><p>{{ ui.register_description }}</p></div>
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="form-field"><label for="{{ form.username.id_for_label }}">{{ ui.username }}</label>{{ form.username }}{% for error in form.username.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}</div>
+        <div class="form-field"><label for="{{ form.password1.id_for_label }}">{{ ui.password }}</label>{{ form.password1 }}{% for error in form.password1.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}</div>
+        <div class="form-field"><label for="{{ form.password2.id_for_label }}">{{ ui.confirm_password }}</label>{{ form.password2 }}{% for error in form.password2.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}</div>
+        <button class="btn btn--primary btn--full" type="submit">{{ ui.create_account }} <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="auth-switch">{{ ui.already_account }} <a href="{% url 'login' %}">{{ ui.sign_in }}</a></p>
+    </article>
+  </section>
+{% endblock %}

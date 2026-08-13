@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ exercise_display.title }} · PyPath{% endblock %}
+
+{% block content %}
+  <div class="breadcrumbs"><a href="{% url 'learning:home' %}">{{ ui.learning_path }}</a><span>/</span><a href="{% url 'learning:lesson-detail' exercise.lesson.slug %}">{{ lesson_display.title }}</a><span>/</span><span>{{ ui.challenge }}</span></div>
+  <section class="exercise-heading">
+    <div>
+      <p class="eyebrow"><span class="challenge-icon">⚡</span> {{ ui.programming_challenge }}</p>
+      <h1>{{ exercise_display.title }}</h1>
+      <p>{{ ui.exercise_intro }}</p>
+    </div>
+    <div class="timeout-badge"><span>◷</span> {{ exercise.timeout_seconds }}s limit</div>
+  </section>
+
+  <div class="exercise-layout">
+    <article class="challenge-card">
+      <div class="challenge-card__title"><span>01</span><h2>{{ ui.requirements }}</h2></div>
+      <div class="prose">{{ exercise_display.prompt|linebreaks }}</div>
+      {% if exercise.starter_code %}
+        <div class="code-section">
+          <div class="code-section__heading"><span>{{ ui.starter_code }}</span><small>Python</small></div>
+          <pre class="code-block"><code>{{ exercise.starter_code }}</code></pre>
+        </div>
+      {% endif %}
+      <div class="challenge-tip"><span>✦</span><p><strong>{{ ui.tip }}:</strong> {{ ui.photo_tip }}</p></div>
+
+      <section class="sandbox-lab" data-code-sandbox data-run-url="{% url 'learning:api-sandbox-run' %}" data-timeout-seconds="{{ exercise.timeout_seconds }}" aria-labelledby="sandbox-title">
+        <div class="sandbox-lab__header">
+          <div>
+            <p class="eyebrow">Code sandbox</p>
+            <h2 id="sandbox-title">{{ ui.sandbox_title }}</h2>
+          </div>
+          <span>{{ exercise.timeout_seconds }}s limit</span>
+        </div>
+        {% if user.is_authenticated %}
+          {% csrf_token %}
+          <label class="sandbox-lab__field" for="sandbox-code">
+            <span>Python code</span>
+            <textarea id="sandbox-code" data-sandbox-code spellcheck="false">{{ exercise.starter_code|default:"# Write your solution here\nprint('Hello, Python!')" }}</textarea>
+          </label>
+          <label class="sandbox-lab__field" for="sandbox-stdin">
+            <span>{{ ui.optional_stdin }}</span>
+            <textarea id="sandbox-stdin" data-sandbox-stdin spellcheck="false" placeholder="{{ ui.stdin_placeholder }}">{{ exercise.test_input }}</textarea>
+          </label>
+          <div class="sandbox-lab__actions">
+            <button class="btn btn--primary" type="button" data-sandbox-run>{{ ui.run_code }} <span aria-hidden="true">▶</span></button>
+            <button class="btn btn--secondary" type="button" data-sandbox-reset>{{ ui.restore_sample }}</button>
+            <span data-sandbox-status role="status" aria-live="polite">{{ ui.sandbox_ready }}</span>
+          </div>
+          <div class="sandbox-output" data-sandbox-result hidden>
+            <div class="sandbox-output__head">
+              <strong data-sandbox-result-title>{{ ui.result }}</strong>
+              <small data-sandbox-result-meta></small>
+            </div>
+            <pre class="output-block"><code data-sandbox-output></code></pre>
+            <p class="sandbox-output__error" data-sandbox-error hidden></p>
+          </div>
+        {% else %}
+          <div class="sandbox-login">
+            <p>{{ ui.exercise_intro }}</p>
+            <a class="btn btn--primary" href="{% url 'login' %}?next={{ request.path|urlencode }}">{{ ui.login_to_run }}</a>
+          </div>
+        {% endif %}
+      </section>
+    </article>
+
+    <aside class="upload-panel">
+      <div class="upload-panel__header"><span class="panel-step">02</span><div><p class="eyebrow">{{ ui.submit }}</p><h2>{{ ui.submit_code }}</h2></div></div>
+      {% if user.is_authenticated %}
+        <p class="upload-panel__intro">{{ ui.upload_intro }}</p>
+        <form method="post" enctype="multipart/form-data" action="{% url 'learning:submission-create' exercise.slug %}" class="upload-form">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <label class="upload-dropzone" for="{{ form.image.id_for_label }}">
+            <span class="upload-dropzone__icon">⇧</span>
+            <strong>{{ ui.choose_photo }}</strong>
+            <span>{{ ui.image_formats }}</span>
+            {{ form.image }}
+          </label>
+          {% for error in form.image.errors %}<p class="field-error" role="alert">{{ error }}</p>{% endfor %}
+          <button class="btn btn--primary btn--full" type="submit">{{ ui.submit_for_grading }} <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="upload-panel__privacy"><span>⌾</span> {{ ui.privacy_note }}</div>
+      {% else %}
+        <p class="upload-panel__intro">{{ ui.login_to_submit_intro }}</p>
+        <a class="btn btn--primary btn--full" href="{% url 'login' %}?next={{ request.path|urlencode }}">{{ ui.login_to_submit }} <span aria-hidden="true">→</span></a>
+        <p class="auth-prompt">{{ ui.no_account }} <a href="{% url 'register' %}">{{ ui.create_free }}</a></p>
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script type="module" src="{% static 'learning/js/sandbox.js' %}?v=language-audit-v2"></script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__content" data-reveal>
+      <p class="eyebrow"><span class="live-dot"></span> Python · Math · AI · ML Engineering</p>
+      <h1 id="hero-title">{{ ui.hero_title }}<br><em>{{ ui.hero_emphasis }}</em></h1>
+      <p class="hero__lead">{{ ui.hero_description }}</p>
+      <div class="hero__actions">
+        {% if lessons %}
+          <a class="btn btn--primary" href="#roadmap-overview">{{ ui.hero_roadmap_cta }} <span aria-hidden="true">↓</span></a>
+        {% endif %}
+        {% if not user.is_authenticated %}
+          <a class="text-link" href="{% url 'register' %}">{{ ui.hero_register_cta }} <span aria-hidden="true">→</span></a>
+        {% endif %}
+      </div>
+      <div class="hero__proof">
+        <div><strong>{{ lesson_total }}</strong><span>{{ ui.hero_lessons }}</span></div>
+        <div><strong>{{ curriculum_sections|length }}</strong><span>{{ ui.hero_tracks }}</span></div>
+        <div><strong>OCR</strong><span>{{ ui.hero_ocr }}</span></div>
+      </div>
+    </div>
+    <div class="hero__visual" data-three-stage data-reveal aria-hidden="true">
+      <canvas class="hero__canvas" data-three-hero aria-hidden="true"></canvas>
+      <div class="orb orb--one"></div>
+      <div class="orb orb--two"></div>
+      <div class="terminal-card" data-terminal-card>
+        <div class="terminal-card__bar"><span></span><span></span><span></span><code>ml_engineer.py</code></div>
+        <pre><span class="code-purple">def</span> <span class="code-blue">build</span>(skill):
+    <span class="code-purple">return</span> <span class="code-green">f"Master {skill}"</span>
+
+path = build(<span class="code-green">"Python + ML"</span>)
+<span class="code-blue">print</span>(path)</pre>
+        <div class="terminal-card__output"><span>›</span> Master Python + ML <i>✓</i></div>
+      </div>
+      <div class="floating-chip floating-chip--top">Math <span>AI</span></div>
+      <div class="floating-chip floating-chip--bottom"><b>✓</b> Portfolio-ready path</div>
+    </div>
+  </section>
+
+  <section class="roadmap-overview" id="roadmap-overview" aria-labelledby="roadmap-overview-title">
+    <div class="roadmap-overview__header" data-reveal>
+      <div>
+        <p class="eyebrow"><span class="live-dot"></span> {{ ui.roadmap_eyebrow }}</p>
+        <h2 id="roadmap-overview-title">{{ ui.roadmap_title }} <em>{{ ui.roadmap_emphasis }}</em></h2>
+        <p>{{ ui.roadmap_description }}</p>
+      </div>
+      <a class="roadmap-overview__jump" href="#lessons">{{ ui.browse_lessons }} {{ lesson_total }} {{ ui.lesson_word }} <span aria-hidden="true">↓</span></a>
+    </div>
+
+    <div class="roadmap-overview__legend" aria-label="{{ ui.roadmap_eyebrow }}">
+      <span><b>{{ roadmap_stages|length }}</b> {{ ui.roadmap_phase_summary }}</span>
+      <span><b>{{ curriculum_sections|length }}</b> {{ ui.roadmap_track_summary }}</span>
+      <span><b>{{ lesson_total }}</b> {{ ui.roadmap_checkpoint_summary }}</span>
+    </div>
+
+    <ol class="roadmap-flow" aria-label="{{ ui.roadmap_title }} {{ ui.roadmap_emphasis }}">
+      {% for stage in roadmap_stages %}
+        <li class="roadmap-stage roadmap-stage--{{ stage.accent }}" data-reveal>
+          <div class="roadmap-stage__rail" aria-hidden="true">
+            <span>{{ stage.index }}</span>
+          </div>
+          <article class="roadmap-stage__card">
+            <div class="roadmap-stage__header">
+              <div>
+                <p>{{ ui.phase }} {{ stage.index }}</p>
+                <h3>{{ stage.title }}</h3>
+              </div>
+              <span class="roadmap-stage__metric">{{ stage.lesson_count }} {{ ui.lesson_word }}</span>
+            </div>
+            <p class="roadmap-stage__description">{{ stage.description }}</p>
+            <p class="roadmap-stage__outcome"><span aria-hidden="true">✦</span>{{ stage.outcome }}</p>
+            <div class="roadmap-track-list" aria-label="{{ stage.title }}">
+              {% for track in stage.tracks %}
+                <a class="roadmap-track" href="#{{ track.key }}" data-roadmap-track="{{ track.key }}">
+                  <span class="roadmap-track__index">{{ track.index }}</span>
+                  <span class="roadmap-track__copy">
+                    <strong>{{ track.short_title }}</strong>
+                    <small>{{ track.lesson_count }} {{ ui.lesson_word }} · {{ track.estimated_minutes }} {{ ui.minutes }}</small>
+                  </span>
+                  <span class="roadmap-track__arrow" aria-hidden="true">↘</span>
+                </a>
+              {% endfor %}
+            </div>
+          </article>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="learning-section" id="lessons" aria-labelledby="lessons-title">
+    <div class="section-heading" data-reveal>
+      <div>
+        <p class="eyebrow">{{ ui.library_eyebrow }}</p>
+        <h2 id="lessons-title">{{ ui.library_title }}</h2>
+      </div>
+      <span class="lesson-count">{{ lesson_total }} {{ ui.lessons_open }}</span>
+    </div>
+
+    <div class="curriculum-explorer" data-curriculum>
+      <div class="curriculum-search">
+        <label class="sr-only" for="lesson-search">{{ ui.search_lessons }}</label>
+        <input id="lesson-search" type="search" autocomplete="off" placeholder="{{ ui.search_placeholder }}" data-curriculum-search aria-describedby="curriculum-status">
+      </div>
+      <div class="curriculum-filters" role="group" aria-label="{{ ui.filter_tracks }}">
+        <button type="button" data-track-filter="all" aria-pressed="true">{{ ui.all }} <span>{{ lesson_total }}</span></button>
+        {% for section in curriculum_sections %}
+          <button type="button" data-track-filter="{{ section.key }}" aria-pressed="false">{{ section.display_short_title }} <span>{{ section.lesson_count }}</span></button>
+        {% endfor %}
+      </div>
+      <p id="curriculum-status" class="curriculum-status" data-curriculum-status role="status" aria-live="polite" aria-atomic="true"></p>
+      <p class="curriculum-empty" data-curriculum-empty hidden>{{ ui.no_matching_lessons }}</p>
+    </div>
+
+    {% for section in curriculum_sections %}
+      <details class="track-section track-section--{{ section.accent }}" id="{{ section.key }}" data-track-section data-track="{{ section.key }}" {% if forloop.first %}open{% endif %}>
+        <summary class="track-section__summary" data-reveal>
+          <span class="track-index">{{ section.index }}</span>
+          <span class="track-section__copy">
+            <span class="eyebrow">{{ section.display_phase }}</span>
+            <strong id="{{ section.key }}-title">{{ section.display_title }}</strong>
+            <span>{{ section.display_description }}</span>
+          </span>
+          <span class="track-section__metrics">{{ section.lesson_count }} {{ ui.lesson_word }} · {{ section.practice_count }} {{ ui.checkpoint }} · {{ section.estimated_minutes }} {{ ui.minutes }}</span>
+          <span class="track-section__chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="track-section__body" aria-labelledby="{{ section.key }}-title">
+          <div class="lesson-grid">
+            {% for lesson in section.lessons %}
+              <article class="lesson-card" data-lesson-card data-search="{{ lesson.display_title }} {{ lesson.display_summary }} {{ section.display_title }} {{ section.display_phase }} {{ lesson.get_level_display }}">
+                <div class="lesson-card__top">
+                  <span class="lesson-card__number">{{ forloop.counter|stringformat:"02d" }}</span>
+                  <span class="lesson-card__badge">{{ lesson.get_level_display }}</span>
+                </div>
+                <h3><a href="{% url 'learning:lesson-detail' lesson.slug %}">{{ lesson.display_title }}</a></h3>
+                <p>{{ lesson.display_summary }}</p>
+                <div class="lesson-card__footer">
+                  <span class="lesson-card__meta"><svg class="meta-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3.5 2"></path></svg>{{ lesson.estimated_minutes }} {{ ui.minutes }} · {{ lesson.exercises.all|length }} {{ ui.practice }}</span>
+                  <a class="lesson-card__cta" href="{% url 'learning:lesson-detail' lesson.slug %}" aria-label="{{ ui.open_lesson }}: {{ lesson.display_title }}"><span>{{ ui.open_lesson }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M14 7l5 5-5 5"></path></svg></a>
+                </div>
+                {% if lesson.exercises.all %}
+                  <div class="exercise-preview">
+                    {% for exercise in lesson.exercises.all|slice:":2" %}
+                      <a href="{% url 'learning:exercise-detail' exercise.slug %}"><span>↳</span>{{ exercise.display_title }}</a>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      </details>
+    {% empty %}
+      <article class="empty-card">
+        <span class="empty-card__icon">⌁</span>
+        <h3>{{ ui.no_public_lessons }}</h3>
+        <p>{{ ui.admin_can_add }} <a href="/admin/">Django Admin</a>.</p>
+      </article>
+    {% endfor %}
+  </section>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script type="module" src="{% static 'learning/js/app.js' %}?v=language-audit-v2"></script>
+{% endblock %}
