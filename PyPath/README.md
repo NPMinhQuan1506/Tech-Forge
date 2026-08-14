@@ -250,7 +250,7 @@ TESSERACT_CMD có thể bỏ trống nếu tesseract.exe đã có trong PATH. Fa
 ### 2. Khởi động PostgreSQL
 
 ~~~powershell
-Set-Location <duong-dan-toi-python_ai_mini_project>
+Set-Location <duong-dan-toi-PyPath>
 Copy-Item .env.example .env
 docker compose up -d db
 ~~~
@@ -321,17 +321,6 @@ python manage.py runserver 127.0.0.1:8000
 | CODE_TIMEOUT_SECONDS / MAX_CODE_TIMEOUT_SECONDS | 3 / 10 | Timeout code; exercise Django cũng tối đa 10 giây. |
 | MAX_UPLOAD_BYTES / MAX_IMAGE_PIXELS | 5 MiB / 16M | Chặn ảnh quá lớn trước khi OCR. |
 | CODE_MEMORY_LIMIT_MB | 128 | Giới hạn memory subprocess trên Unix. |
-
-## Mini project CLI cũ (tuỳ chọn)
-
-Các file `app.py`, `lessons.py`, `quiz_data.py`, `exercises.py` và
-`test_exercises.py` là mini project học Python trên CMD ban đầu; chúng độc lập
-với nền tảng Django/FastAPI. Có thể tiếp tục dùng để học cú pháp cơ bản:
-
-~~~powershell
-python app.py
-python test_exercises.py
-~~~
 
 ## Lưu ý production
 
