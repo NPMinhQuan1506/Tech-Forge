@@ -23,7 +23,7 @@ from .i18n import (
     localize_curriculum,
     localize_roadmap,
 )
-from .lesson_content import lesson_sections
+from .lesson_content import book_lesson_sections
 from .models import Exercise, Lesson, Submission
 from .pedagogy import get_learning_map, get_learning_visual
 from .serializers import (
@@ -182,8 +182,8 @@ class LessonDetailView(DetailView):
         language = current_language(self.request)
         context["learning_map"] = get_learning_map(self.object.track, language)
         context["learning_visual"] = get_learning_visual(self.object.track, language)
-        context["lesson_sections"] = lesson_sections(
-            self.object.content, language
+        context["lesson_sections"] = book_lesson_sections(
+            self.object.content, language, self.object
         )
         context["lesson_display"] = lesson_display(language, self.object)
         for exercise in self.object.exercises.all():

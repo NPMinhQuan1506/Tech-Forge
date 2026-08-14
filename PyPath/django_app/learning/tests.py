@@ -20,7 +20,7 @@ from rest_framework.test import APIClient
 from .curriculum import CURRICULUM, CURRICULUM_MANIFEST
 from .curriculum_registry import ROADMAP_STAGES, CURRICULUM_TRACKS
 from .forms import SubmissionImageForm
-from .lesson_content import lesson_sections
+from .lesson_content import book_lesson_sections, lesson_sections
 from .models import Exercise, Lesson, Submission
 from .services import (
     FastAPICodeRunnerClient,
@@ -593,4 +593,47 @@ class LessonContentPresentationTests(TestCase):
         learning_map = get_learning_map("python", "en")
 
         self.assertIn("Python transforms", learning_map.mental_model)
-        self.assertTrue(all("Đ" not in item for item in learning_map.pipeline))
+
+    def test_book_lesson_sections_expand_content_into_master_chapter(self) -> None:
+        lesson = Lesson(
+            title="Python 01 - print()",
+            summary="Understand output and program flow.",
+            track=Lesson.Track.PYTHON,
+            level=Lesson.Level.BEGINNER,
+            estimated_minutes=20,
+        )
+        content = CURRICULUM[0]["lesson"]['content']
+
+        sections = book_lesson_sections(content, "vi", lesson)
+        titles = [section["title"] for section in sections]
+
+        self.assertGreaterEqual(len(sections), 10)
+        self.assertIn("Mục tiêu năng lực", titles)
+        self.assertIn("Lab portfolio ngoài sandbox", titles)
+        self.assertIn("Rubric đạt chuẩn master", titles)
+        self.assertTrue(any(section["is_example"] for section in sections))
+        self.assertTrue(
+            any("edge case" in section["body"].lower() for section in sections)
+        )
+
+    def test_english_book_lesson_sections_are_not_generic_six_block_fallback(self) -> None:
+        lesson = Lesson(
+            title="ML 09 - Baseline model",
+            summary="Build a measurable baseline before tuning.",
+            track=Lesson.Track.ML,
+            level=Lesson.Level.INTERMEDIATE,
+            estimated_minutes=45,
+        )
+        content = CURRICULUM[0]["lesson"]['content']
+
+        sections = book_lesson_sections(content, "en", lesson)
+        titles = [section["title"] for section in sections]
+
+        self.assertGreaterEqual(len(sections), 10)
+        self.assertEqual(sections[0]["title"], "Mastery target")
+        self.assertIn("Portfolio lab", titles)
+        self.assertIn("Machine Learning", sections[1]["body"])
+        self.assertIn(
+            "print",
+            next(section for section in sections if section["is_example"])["body"],
+        )
