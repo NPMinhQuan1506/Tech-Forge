@@ -1,0 +1,174 @@
+name: python-learning-platform
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-python_learning}
+      POSTGRES_USER: ${POSTGRES_USER:-python_learning}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-this-local-password}
+    ports:
+      - "127.0.0.1:${POSTGRES_EXPOSE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      - backend_network
+      # Keep the existing localhost PostgreSQL mapping functional.  The
+      # application services never join this network, so this does not give
+      # the code-execution service an egress route.
+      - edge_network
+
+  ocr-service:
+    build:
+      context: ./ocr_service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TESSERACT_CMD: ${TESSERACT_CMD:-}
+      OCR_LANGUAGE: ${OCR_LANGUAGE:-eng}
+      CODE_TIMEOUT_SECONDS: ${CODE_TIMEOUT_SECONDS:-3}
+      MAX_CODE_TIMEOUT_SECONDS: ${MAX_CODE_TIMEOUT_SECONDS:-10}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-5242880}
+      MAX_IMAGE_PIXELS: ${MAX_IMAGE_PIXELS:-16000000}
+      MAX_SOURCE_BYTES: ${MAX_SOURCE_BYTES:-50000}
+      MAX_STDIN_BYTES: ${MAX_STDIN_BYTES:-65536}
+      MAX_OUTPUT_BYTES: ${MAX_OUTPUT_BYTES:-65536}
+      CODE_MEMORY_LIMIT_MB: ${CODE_MEMORY_LIMIT_MB:-128}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+    pids_limit: 64
+    mem_limit: 512m
+    cpus: 1.0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      # The OCR and sandbox container deliberately has no route to the edge
+      # network.  It can communicate only with Django through this internal
+      # bridge.
+      - backend_network
+
+  django:
+    build:
+      context: ./django_app
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-development-key-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000}
+      POSTGRES_DB: ${POSTGRES_DB:-python_learning}
+      POSTGRES_USER: ${POSTGRES_USER:-python_learning}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-this-local-password}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      FASTAPI_URL: ${FASTAPI_URL:-http://ocr-service:8001}
+      FASTAPI_OCR_URL: ${FASTAPI_OCR_URL:-http://ocr-service:8001/api/v1/grade-image}
+      FASTAPI_RUN_CODE_URL: ${FASTAPI_RUN_CODE_URL:-http://ocr-service:8001/api/v1/run-code}
+      FASTAPI_TIMEOUT_SECONDS: ${FASTAPI_TIMEOUT_SECONDS:-20}
+    command: >-
+      /bin/sh -c "python manage.py migrate --noinput
+      && python manage.py seed_learning_data
+      && python manage.py collectstatic --noinput
+      && exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60"
+    depends_on:
+      db:
+        condition: service_healthy
+      ocr-service:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/django_app/media
+      - static_data:/app/django_app/staticfiles
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m,mode=1777
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    networks:
+      - backend_network
+
+  gateway:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    # Bypass the image setup scripts: they try to modify default.conf, which
+    # is intentionally bind-mounted read-only below.
+    entrypoint: ["nginx", "-g", "daemon off;"]
+    command: []
+    depends_on:
+      django:
+        condition: service_started
+      ocr-service:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DJANGO_PORT:-8000}:8000"
+      - "127.0.0.1:${FASTAPI_PORT:-8001}:8001"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_data:/static:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:rw,noexec,nosuid,size=16m
+      - /var/run:rw,noexec,nosuid,size=1m
+    pids_limit: 64
+    mem_limit: 128m
+    cpus: 0.25
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # The Nginx master process drops privileges to its bundled `nginx` user.
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    networks:
+      # This is the only HTTP ingress/egress-capable application-side
+      # container.  It accepts localhost traffic and proxies it into the
+      # isolated backend network.
+      - edge_network
+      - backend_network
+
+volumes:
+  postgres_data:
+  media_data:
+  static_data:
+
+networks:
+  edge_network:
+    driver: bridge
+  backend_network:
+    driver: bridge
+    internal: true

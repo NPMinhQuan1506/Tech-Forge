@@ -1,0 +1,75 @@
+{% load static %}
+<!doctype html>
+<html lang="{{ ui_language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111a35">
+  <title>{% block title %}{{ ui.site_title }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'learning/css/app.css' %}?v=cta-icon-v4">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="nav-inner container">
+        <a class="brand" href="{% url 'learning:home' %}" aria-label="PyPath home">
+          <span class="brand-mark" aria-hidden="true">&gt;_</span>
+          <span>Py<span>Path</span></span>
+        </a>
+        <nav class="nav-actions" aria-label="Primary navigation">
+          <details class="language-menu nav-menu">
+            <summary aria-label="{{ ui.language }}"><svg class="language-menu__globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17M12 3.5c2.5 2.3 3.7 5.1 3.7 8.5S14.5 18.2 12 20.5M12 3.5C9.5 5.8 8.3 8.6 8.3 12s1.2 6.2 3.7 8.5"></path></svg><span class="language-menu__flag language-menu__flag--{% if ui_language == "en" %}en{% else %}vi{% endif %}" aria-hidden="true"></span><span>{{ ui.language_current }}</span></summary>
+            <form class="nav-popover nav-popover--language" action="{% url 'learning:set-interface-language' %}" method="post">
+              {% csrf_token %}
+              <input name="next" type="hidden" value="{{ request.get_full_path }}">
+              <button type="submit" name="language" value="vi" {% if ui_language == "vi" %}aria-current="true"{% endif %}><span class="language-menu__flag language-menu__flag--vi" aria-hidden="true"></span>{{ ui.language_vi }}</button>
+              <button type="submit" name="language" value="en" {% if ui_language == "en" %}aria-current="true"{% endif %}><span class="language-menu__flag language-menu__flag--en" aria-hidden="true"></span>{{ ui.language_en }}</button>
+            </form>
+          </details>
+          <details class="theme-menu nav-menu">
+            <summary aria-label="{{ ui.theme }}"><span data-theme-icon aria-hidden="true">☀</span></summary>
+            <div class="nav-popover nav-popover--theme" role="group" aria-label="{{ ui.theme }}">
+              <button type="button" data-theme-value="light"><span aria-hidden="true">☀</span>{{ ui.theme_light }}</button>
+              <button type="button" data-theme-value="dark"><span aria-hidden="true">☾</span>{{ ui.theme_dark }}</button>
+            </div>
+          </details>
+          <details class="quick-menu nav-menu">
+            <summary aria-label="{{ ui.quick_menu }}"><span aria-hidden="true">⋮</span></summary>
+            <div class="nav-popover nav-popover--quick">
+              <a href="{% url 'learning:home' %}">{{ ui.learning_path }}</a>
+            </div>
+          </details>
+          {% if user.is_authenticated %}
+            <details class="account-menu nav-menu">
+              <summary aria-label="{{ ui.profile_menu }}"><span class="account-avatar" aria-hidden="true">{{ user.username|first|upper }}</span></summary>
+              <div class="nav-popover nav-popover--account">
+                <p>{{ ui.signed_in_as }}</p>
+                <strong>{{ user.username }}</strong>
+                <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-logout" type="submit">{{ ui.logout }}</button></form>
+              </div>
+            </details>
+          {% else %}
+            <a href="{% url 'login' %}">{{ ui.login }}</a>
+            <a class="btn btn--small btn--primary" href="{% url 'register' %}">{{ ui.start_free }} <span aria-hidden="true">→</span></a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+    <main class="app-main" id="main-content">
+      <div class="container">
+        {% for message in messages %}
+          <div class="alert alert--{{ message.tags|default:'info' }}" role="alert"><span class="alert__icon" aria-hidden="true">{% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}!{% else %}i{% endif %}</span><span>{{ message }}</span></div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+    <footer class="site-footer"><div class="container footer-inner"><a class="brand brand--footer" href="{% url 'learning:home' %}"><span class="brand-mark" aria-hidden="true">&gt;_</span><span>Py<span>Path</span></span></a><p>{{ ui.footer_tagline }}</p><span>Built for curious minds.</span></div></footer>
+  </div>
+  <script src="{% static 'learning/js/nav-popovers.js' %}?v=nav-popover-v1" defer></script>
+  <script src="{% static 'learning/js/theme.js' %}?v=theme-v1" defer></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

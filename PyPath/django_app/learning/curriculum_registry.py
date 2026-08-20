@@ -1,0 +1,228 @@
+"""Shared presentation metadata for the Master Python and AI curriculum."""
+
+from __future__ import annotations
+
+from typing import Final
+
+
+CURRICULUM_TRACKS: Final[tuple[dict[str, str], ...]] = (
+    {
+        "key": "python",
+        "index": "01",
+        "phase": "Nền tảng lập trình",
+        "title": "Python nền tảng",
+        "short_title": "Python",
+        "description": "Cú pháp, dữ liệu, thuật toán, test, JSON và HTTP.",
+        "accent": "violet",
+    },
+    {
+        "key": "python_pro",
+        "index": "02",
+        "phase": "Nền tảng lập trình",
+        "title": "Python chuyên sâu",
+        "short_title": "Python Pro",
+        "description": "Async, typing, package, hiệu năng, bảo mật và kiến trúc mã.",
+        "accent": "indigo",
+    },
+    {
+        "key": "engineering",
+        "index": "03",
+        "phase": "Nền tảng lập trình",
+        "title": "Software Engineering",
+        "short_title": "Engineering",
+        "description": "Git, SQL, testing, Docker, CI/CD và an toàn ứng dụng.",
+        "accent": "slate",
+    },
+    {
+        "key": "math",
+        "index": "04",
+        "phase": "Toán cho AI",
+        "title": "Toán tuyến tính & Giải tích cho AI",
+        "short_title": "Toán AI",
+        "description": "Vector, ma trận, đạo hàm, gradient và tối ưu hóa.",
+        "accent": "rose",
+    },
+    {
+        "key": "statistics",
+        "index": "05",
+        "phase": "Toán cho AI",
+        "title": "Xác suất & Thống kê",
+        "short_title": "Xác suất",
+        "description": "Phân phối, Bayes, ước lượng, kiểm định và thông tin.",
+        "accent": "orange",
+    },
+    {
+        "key": "data",
+        "index": "06",
+        "phase": "Dữ liệu",
+        "title": "Data Engineering & Analytics",
+        "short_title": "Data",
+        "description": "NumPy, pandas, SQL, EDA, chất lượng dữ liệu và pipeline.",
+        "accent": "teal",
+    },
+    {
+        "key": "ai",
+        "index": "07",
+        "phase": "AI & Machine Learning",
+        "title": "AI Foundation & Responsible AI",
+        "short_title": "AI",
+        "description": "Framing, dữ liệu, evaluation, safety, privacy và governance.",
+        "accent": "cyan",
+    },
+    {
+        "key": "ml",
+        "index": "08",
+        "phase": "AI & Machine Learning",
+        "title": "Classical Machine Learning",
+        "short_title": "ML",
+        "description": "Model tabular, validation, metric, feature và system design.",
+        "accent": "blue",
+    },
+    {
+        "key": "mlops",
+        "index": "09",
+        "phase": "AI & Machine Learning",
+        "title": "ML Engineering & MLOps",
+        "short_title": "MLOps",
+        "description": "Reproducibility, serving, CI/CD, monitoring, drift và SLO.",
+        "accent": "green",
+    },
+    {
+        "key": "dl",
+        "index": "10",
+        "phase": "Deep Learning",
+        "title": "Deep Learning & PyTorch",
+        "short_title": "DL",
+        "description": "Autograd, training loop, CNN, Transformer và inference tối ưu.",
+        "accent": "purple",
+    },
+    {
+        "key": "cv",
+        "index": "11",
+        "phase": "AI chuyên ngành",
+        "title": "Computer Vision",
+        "short_title": "CV",
+        "description": "Ảnh, detection, segmentation, OCR, ViT và triển khai edge.",
+        "accent": "amber",
+    },
+    {
+        "key": "nlp",
+        "index": "12",
+        "phase": "AI chuyên ngành",
+        "title": "NLP & Language Models",
+        "short_title": "NLP",
+        "description": "Tokenization, embedding, retrieval, multilingual NLP và Document AI.",
+        "accent": "fuchsia",
+    },
+    {
+        "key": "genai",
+        "index": "13",
+        "phase": "AI chuyên ngành",
+        "title": "Generative AI, RAG & Agents",
+        "short_title": "GenAI",
+        "description": "Prompt, RAG, tool use, evaluation, safety và LLM observability.",
+        "accent": "pink",
+    },
+    {
+        "key": "rl",
+        "index": "14",
+        "phase": "AI chuyên ngành",
+        "title": "Reinforcement Learning",
+        "short_title": "RL",
+        "description": "MDP, Bellman, Q-learning, policy gradient và safe offline RL.",
+        "accent": "red",
+    },
+    {
+        "key": "django",
+        "index": "15",
+        "phase": "Xây sản phẩm AI",
+        "title": "Django cho ML Product",
+        "short_title": "Django",
+        "description": "MVT, ORM, Auth, DRF, background jobs và deployment.",
+        "accent": "emerald",
+    },
+    {
+        "key": "fastapi",
+        "index": "16",
+        "phase": "Xây sản phẩm AI",
+        "title": "FastAPI cho ML Product",
+        "short_title": "FastAPI",
+        "description": "Pydantic, async, OAuth, queue, resilience và observability.",
+        "accent": "sky",
+    },
+    {
+        "key": "capstone",
+        "index": "17",
+        "phase": "Portfolio & nghề nghiệp",
+        "title": "Capstone & Portfolio ML Engineer",
+        "short_title": "Capstone",
+        "description": "Dự án đầu-cuối, report đánh giá, deploy và system design.",
+        "accent": "gold",
+    },
+)
+
+
+# The visual roadmap groups tracks into a deliberate order. Track metadata
+# stays independent so Django Admin can still display and filter a track
+# without being coupled to the home-page presentation.
+ROADMAP_STAGES: Final[tuple[dict[str, object], ...]] = (
+    {
+        "key": "foundation",
+        "index": "01",
+        "title": "Nền tảng lập trình",
+        "description": "Python sạch, tư duy thuật toán và workflow kỹ sư.",
+        "outcome": "Tự tin viết, kiểm thử và đóng gói Python production-ready.",
+        "accent": "violet",
+        "track_keys": ("python", "python_pro", "engineering"),
+    },
+    {
+        "key": "math-data",
+        "index": "02",
+        "title": "Toán & Dữ liệu",
+        "description": "Ngôn ngữ để hiểu biểu diễn, gradient, uncertainty và dữ liệu.",
+        "outcome": "Đọc được trực giác của loss, gradient, xác suất và data pipeline.",
+        "accent": "rose",
+        "track_keys": ("math", "statistics", "data"),
+    },
+    {
+        "key": "core-ml",
+        "index": "03",
+        "title": "AI & Machine Learning",
+        "description": "Framing, training, validation và vận hành model cổ điển.",
+        "outcome": "Đưa baseline ML từ metric đúng đến service được quan sát.",
+        "accent": "blue",
+        "track_keys": ("ai", "ml", "mlops"),
+    },
+    {
+        "key": "deep-learning",
+        "index": "04",
+        "title": "Deep Learning",
+        "description": "PyTorch, backpropagation và training loop hiệu quả.",
+        "outcome": "Thiết kế, debug và tối ưu pipeline học sâu có chủ đích.",
+        "accent": "purple",
+        "track_keys": ("dl",),
+    },
+    {
+        "key": "specialization",
+        "index": "05",
+        "title": "AI chuyên ngành",
+        "description": "Vision, NLP, GenAI/RAG và Reinforcement Learning.",
+        "outcome": "Chọn đúng kỹ thuật cho bài toán AI cụ thể thay vì chạy theo hype.",
+        "accent": "fuchsia",
+        "track_keys": ("cv", "nlp", "genai", "rl"),
+    },
+    {
+        "key": "ship",
+        "index": "06",
+        "title": "Build & Ship",
+        "description": "Django, FastAPI và capstone để đưa khả năng ML đến người dùng.",
+        "outcome": "Ship một ML system có đánh giá, deploy và câu chuyện kỹ thuật rõ ràng.",
+        "accent": "emerald",
+        "track_keys": ("django", "fastapi", "capstone"),
+    },
+)
+
+
+TRACK_BY_KEY: Final[dict[str, dict[str, str]]] = {
+    track["key"]: track for track in CURRICULUM_TRACKS
+}

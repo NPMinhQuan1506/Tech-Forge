@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ui.submission_result }} · PyPath{% endblock %}
+
+{% block content %}
+  <div class="breadcrumbs"><a href="{% url 'learning:home' %}">{{ ui.learning_path }}</a><span>/</span><a href="{% url 'learning:exercise-detail' submission.exercise.slug %}">{{ exercise_display.title }}</a><span>/</span><span>{{ ui.result }}</span></div>
+  <section class="result-hero result-hero--{{ submission.status }}">
+    <div class="result-hero__icon">{% if submission.status == 'passed' %}✓{% elif submission.status == 'failed' %}↻{% else %}!{% endif %}</div>
+    <div><p class="eyebrow">{{ ui.submission_result }}</p><h1>{% if submission.status == 'passed' %}{{ ui.submission_passed }}{% elif submission.status == 'failed' %}{{ ui.submission_failed }}{% else %}{{ ui.submission_review }}{% endif %}</h1><p>{{ exercise_display.title }} · {{ ui.sent_at }} {{ submission.created_at|date:"H:i, d/m/Y" }}</p></div>
+    <span class="status-badge status-badge--{{ submission.status }}">{{ submission.get_status_display }}</span>
+  </section>
+  <div class="result-metrics">
+    <div class="metric-card"><span>⌁</span><div><small>{{ ui.ocr_confidence }}</small><strong>{% if submission.ocr_confidence is not None %}{{ submission.ocr_confidence|floatformat:1 }}%{% else %}—{% endif %}</strong></div></div>
+    <div class="metric-card"><span>◷</span><div><small>{{ ui.processing_status }}</small><strong>{{ submission.get_status_display }}</strong></div></div>
+    <div class="metric-card"><span>⌘</span><div><small>{{ ui.exercise }}</small><strong>{{ exercise_display.title }}</strong></div></div>
+  </div>
+  <div class="result-grid">
+    {% if submission.extracted_code %}<article class="result-card"><div class="result-card__heading"><h2>{{ ui.ocr_code }}</h2><span>PYTHON</span></div><pre class="code-block"><code>{{ submission.extracted_code }}</code></pre></article>{% endif %}
+    {% if submission.execution_output %}<article class="result-card"><div class="result-card__heading"><h2>{{ ui.program_output }}</h2><span>OUTPUT</span></div><pre class="output-block">{{ submission.execution_output }}</pre></article>{% endif %}
+    {% if submission.error_message %}<article class="result-card result-card--error"><div class="result-card__heading"><h2>{{ ui.grader_note }}</h2><span>NOTE</span></div><p>{{ submission.error_message }}</p></article>{% endif %}
+  </div>
+  <div class="result-actions"><a class="btn btn--secondary" href="{% url 'learning:exercise-detail' submission.exercise.slug %}">← {{ ui.back_to_exercise }}</a>{% if submission.status != 'passed' %}<a class="btn btn--primary" href="{% url 'learning:exercise-detail' submission.exercise.slug %}">{{ ui.try_again }} <span aria-hidden="true">→</span></a>{% endif %}</div>
+{% endblock %}
