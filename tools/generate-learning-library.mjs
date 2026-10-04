@@ -3,18 +3,8 @@ import { join } from "node:path";
 
 const outDir = join(process.cwd(), "featlearn_ts_scss", "learning-library");
 const chapterDir = join(outDir, "chapters");
+const lessonDir = join(outDir, "lessons");
 const assetDir = join(outDir, "assets");
-
-const standardLens = [
-  "Concept",
-  "Problem it solves",
-  "Primitive model",
-  "Under the hood",
-  "Practice",
-  "Debug / observe",
-  "Trade-offs",
-  "AI-aware engineering",
-];
 
 const parts = [
   {
@@ -482,8 +472,28 @@ const chapters = parts.flatMap((part) =>
   part.chapters.map((chapter) => ({ ...chapter, partId: part.id, partTitle: part.title }))
 );
 
+const lessons = chapters.flatMap((chapter) =>
+  chapter.sections.flatMap(([sectionNumber, sectionTitle, sectionLessons]) =>
+    sectionLessons.map((title, index) => ({
+      number: `${sectionNumber}.${index + 1}`,
+      title,
+      sectionNumber,
+      sectionTitle,
+      chapter,
+    }))
+  )
+);
+
 function slug(chapter) {
   return `${chapter.n}-${chapter.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}.html`;
+}
+
+function slugText(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function lessonSlug(lesson) {
+  return `${lesson.number.replaceAll(".", "-")}-${slugText(lesson.title)}.html`;
 }
 
 function esc(value) {
@@ -494,12 +504,13 @@ function esc(value) {
     .replaceAll('"', "&quot;");
 }
 
-function layout({ title, body, active = "" }) {
+function layout({ title, body, active = "", depth = 0, pageClass = "" }) {
+  const prefix = depth ? "../" : "";
   const nav = chapters
     .map((chapter) => {
-      const href = `chapters/${slug(chapter)}`;
+      const href = `${prefix}chapters/${slug(chapter)}`;
       const cls = active === chapter.n ? "active" : "";
-      return `<a class="${cls}" href="${active ? slug(chapter) : href}"><span>${chapter.n}</span>${esc(chapter.title)}</a>`;
+      return `<a class="${cls}" href="${href}"><span>${chapter.n}</span>${esc(chapter.title)}</a>`;
     })
     .join("");
 
@@ -509,11 +520,11 @@ function layout({ title, body, active = "" }) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(title)}</title>
-  <link rel="stylesheet" href="${active ? "../assets/styles.css" : "assets/styles.css"}">
+  <link rel="stylesheet" href="${prefix}assets/styles.css">
 </head>
-<body>
+<body class="${pageClass}">
   <aside class="sidebar">
-    <a class="brand" href="${active ? "../index.html" : "index.html"}">
+    <a class="brand" href="${prefix}index.html">
       <strong>Tech Forge</strong>
       <span>Learning Library</span>
     </a>
@@ -588,12 +599,12 @@ function renderChapter(chapter, index) {
       const lessonCards = lessons
         .map((lesson, i) => {
           const lessonNum = `${num}.${i + 1}`;
-          const lensItems = standardLens
-            .map((lens) => `<li><strong>${lens}:</strong> ${lessonSentence(lens, lesson, chapter.title)}</li>`)
-            .join("");
+          const lessonRecord = { number: lessonNum, title: lesson, sectionNumber: num, sectionTitle: title, chapter };
           return `<article class="lesson-card" id="${lessonNum.replaceAll(".", "-")}">
-            <h4>${lessonNum}. ${esc(lesson)}</h4>
-            <ul>${lensItems}</ul>
+            <p class="lesson-number">Lesson ${lessonNum}</p>
+            <h3><a href="../lessons/${lessonSlug(lessonRecord)}">${esc(lesson)}</a></h3>
+            <p>${esc(lessonTeaser(lessonRecord))}</p>
+            <a class="read-link" href="../lessons/${lessonSlug(lessonRecord)}">Read the full lesson <span aria-hidden="true">→</span></a>
           </article>`;
         })
         .join("");
@@ -628,26 +639,195 @@ function renderChapter(chapter, index) {
   </section>
   ${sections}`;
 
-  return layout({ title: `${chapter.n}. ${chapter.title}`, body, active: chapter.n });
+  return layout({ title: `${chapter.n}. ${chapter.title}`, body, active: chapter.n, depth: 1 });
 }
 
-function lessonSentence(lens, lesson, chapterTitle) {
-  const lower = lesson.toLowerCase();
-  const variants = {
-    "Concept": `Define ${esc(lesson)} in the context of ${esc(chapterTitle)} using simple language and one concrete example.`,
-    "Problem it solves": `Explain what becomes painful or impossible before ${esc(lower)} exists.`,
-    "Primitive model": `Build the smallest possible version or simulation that reveals the core idea.`,
-    "Under the hood": `Trace the hidden mechanism, data movement, runtime behavior, and important boundaries.`,
-    "Practice": `Complete a short exercise that turns the idea into code, a diagram, or a debugging note.`,
-    "Debug / observe": `Use visible evidence such as logs, DevTools, profiler output, shell commands, memory views, or execution plans.`,
-    "Trade-offs": `Compare speed, memory, complexity, correctness, security, and maintainability costs.`,
-    "AI-aware engineering": `Use AI to generate hypotheses or examples, then verify with evidence instead of trusting the answer blindly.`,
-  };
-  return variants[lens];
+function lessonTeaser(lesson) {
+  return `Understand ${lesson.title} from its purpose and simplest model to its internal behavior, trade-offs, debugging signals, and production use.`;
 }
 
 function sectionSummary(sectionTitle, chapterTitle) {
   return `This section studies ${esc(sectionTitle)} as part of ${esc(chapterTitle)}. Each lesson keeps the same learning loop: understand the concept, rebuild the primitive, observe the internals, break it, and compare trade-offs.`;
+}
+
+function profileFor(lesson) {
+  const n = Number(lesson.chapter.n);
+  if (n <= 3) return {
+    place: "inside a computer",
+    analogy: "a workshop where simple switches, labels, and storage drawers combine into a machine",
+    system: "a small CPU and memory system",
+    evidence: "bit patterns, register values, memory addresses, timing, and instruction traces",
+    stakeholder: "a systems programmer diagnosing why a program behaves differently from its source code",
+  };
+  if (n <= 6) return {
+    place: "at the boundary between programs and the operating system",
+    analogy: "a hotel: applications are guests, the kernel is management, and system calls are the front desk",
+    system: "a command-line program running on an operating system",
+    evidence: "process state, system calls, file descriptors, memory maps, and executable metadata",
+    stakeholder: "an engineer investigating a crash, leak, permission problem, or startup failure",
+  };
+  if (n <= 10) return {
+    place: "inside programs and algorithms",
+    analogy: "organizing a busy kitchen: ingredients are data, recipes are algorithms, and stations are abstractions",
+    system: "a small application that receives input, transforms data, and returns a result",
+    evidence: "inputs, outputs, invariants, call stacks, operation counts, and memory usage",
+    stakeholder: "a developer choosing a clear and efficient solution under real constraints",
+  };
+  if (n <= 15) return {
+    place: "across the browser, network, and application server",
+    analogy: "ordering at a restaurant: the interface captures a request, the kitchen processes it, and a response returns with a status",
+    system: "a web application handling one user action from click to response",
+    evidence: "DOM state, network requests, headers, logs, rendered output, and accessibility checks",
+    stakeholder: "a product team shipping an interface that must remain fast, accessible, and reliable",
+  };
+  if (n <= 18) return {
+    place: "inside data platforms and distributed systems",
+    analogy: "a library network: catalogs locate information, branches keep copies, and rules handle concurrent borrowers",
+    system: "a service storing and retrieving data across more than one machine",
+    evidence: "queries, execution plans, indexes, replicas, messages, latency, and failure logs",
+    stakeholder: "an engineer protecting correctness while traffic and data continue to grow",
+  };
+  if (n <= 23) return {
+    place: "inside a production software organization",
+    analogy: "operating a city: architecture defines districts, delivery builds roads, security sets boundaries, and observability provides sensors",
+    system: "a production service deployed, monitored, and changed by a team",
+    evidence: "tests, build artifacts, deployment history, metrics, traces, logs, and incident timelines",
+    stakeholder: "a team responsible for changing software without surprising its users",
+  };
+  if (n <= 28) return {
+    place: "inside an AI-enabled product",
+    analogy: "training and supervising an apprentice: examples shape behavior, evaluation checks work, and guardrails limit costly mistakes",
+    system: "an AI feature that turns user input and context into a measured output",
+    evidence: "datasets, prompts, model outputs, evaluation scores, latency, cost, and failure categories",
+    stakeholder: "an AI engineer balancing usefulness, reliability, safety, speed, and cost",
+  };
+  return {
+    place: "across a complete learning and engineering workflow",
+    analogy: "learning a city by walking one street, then drawing the map that connects every neighborhood",
+    system: "a small end-to-end project built from observable primitives",
+    evidence: "working artifacts, diagrams, explanations, tests, measurements, and reflection notes",
+    stakeholder: "a learner turning isolated facts into durable engineering judgment",
+  };
+}
+
+function conceptModel(lesson) {
+  const p = profileFor(lesson);
+  return {
+    definition: `${lesson.title} is a concept in ${lesson.sectionTitle}. Treat it as a named tool or rule that helps us reason about ${lesson.chapter.title}. The name matters less than the behavior: what goes in, what changes, what comes out, and which guarantees remain true.`,
+    purpose: `Without a clear model of ${lesson.title}, engineers tend to memorize syntax or copy a solution while missing its limits. The concept exists because a recurring problem ${p.place} needs a shared, testable way to describe and solve it.`,
+    analogy: `Think of ${lesson.title} like ${p.analogy}. The comparison is intentionally incomplete, but it gives you a first picture. After that picture is clear, replace each familiar object with the real technical component and follow the data step by step.`,
+    misconception: `A common mistake is to treat ${lesson.title} as a product name or a magic command. It is more useful to see it as a relationship between state, operations, and constraints. Different technologies can implement the same idea with different costs.`,
+  };
+}
+
+function renderDiagram(lesson) {
+  const labels = ["Input / state", lesson.title, "Mechanism", "Observable result"];
+  const markerId = `arrow-${lesson.number.replaceAll(".", "-")}`;
+  return `<figure class="diagram">
+    <figcaption>A simple mental model for ${esc(lesson.title)}</figcaption>
+    <svg viewBox="0 0 940 230" role="img" aria-label="Flow from input through ${esc(lesson.title)} to an observable result">
+      <defs><marker id="${markerId}" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"></path></marker></defs>
+      ${labels.map((label, index) => `<g transform="translate(${25 + index * 230},65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">${esc(label)}</text><text class="small" x="95" y="64" text-anchor="middle">${index === 0 ? "What we know" : index === 1 ? "The idea being studied" : index === 2 ? "What happens inside" : "What we can verify"}</text></g>`).join("")}
+      ${[0, 1, 2].map((index) => `<line x1="${215 + index * 230}" y1="111" x2="${248 + index * 230}" y2="111" marker-end="url(#${markerId})"></line>`).join("")}
+    </svg>
+    <p>Read the diagram from left to right. At every arrow, ask: what information crosses this boundary, who owns it, and how could we observe it?</p>
+  </figure>`;
+}
+
+function renderLesson(lesson, index) {
+  const previous = lessons[index - 1];
+  const next = lessons[index + 1];
+  const p = profileFor(lesson);
+  const c = conceptModel(lesson);
+  const id = lesson.number.replaceAll(".", "-");
+  const body = `<article class="lesson-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Library</a><span>›</span>
+      <a href="../chapters/${slug(lesson.chapter)}">Chapter ${lesson.chapter.n}</a><span>›</span>
+      <span>${esc(lesson.number)}</span>
+    </nav>
+    <header class="lesson-hero">
+      <p class="eyebrow">${esc(lesson.chapter.partTitle)} · ${esc(lesson.sectionTitle)}</p>
+      <h1>${esc(lesson.number)}. ${esc(lesson.title)}</h1>
+      <p class="lead">${esc(lessonTeaser(lesson))}</p>
+      <div class="lesson-meta"><span>25–40 min read</span><span>20–45 min practice</span><span>Beginner-friendly explanation</span></div>
+    </header>
+
+    <aside class="on-this-page"><strong>On this page</strong><nav>
+      <a href="#goals-${id}">Learning goals</a><a href="#theory-${id}">Theory</a><a href="#diagram-${id}">Diagram</a>
+      <a href="#examples-${id}">Examples</a><a href="#internals-${id}">Under the hood</a><a href="#practice-${id}">Practice</a>
+      <a href="#case-${id}">Real problem</a><a href="#extend-${id}">Go further</a><a href="#check-${id}">Self-check</a>
+    </nav></aside>
+
+    <section class="lesson-section" id="goals-${id}"><p class="section-kicker">01 · Orientation</p><h2>What you will learn</h2>
+      <p>By the end, you should be able to explain ${esc(lesson.title)} without jargon, draw its smallest useful model, recognize it inside ${esc(p.system)}, and choose evidence that confirms whether it works.</p>
+      <div class="callout"><strong>Prerequisite check</strong><p>You only need the chapter idea: ${esc(lesson.chapter.summary)} If a term is unfamiliar, keep reading; the first example builds the model from ordinary experience.</p></div>
+      <ul class="check-list"><li>State the problem the concept addresses.</li><li>Identify input, internal state, operation, output, and failure boundary.</li><li>Compare at least two implementation choices.</li><li>Verify a claim with observable evidence.</li></ul>
+    </section>
+
+    <section class="lesson-section" id="theory-${id}"><p class="section-kicker">02 · Core theory</p><h2>Start with the idea, not the jargon</h2>
+      <h3>A plain-language definition</h3><p>${esc(c.definition)}</p>
+      <h3>Why this concept exists</h3><p>${esc(c.purpose)}</p>
+      <h3>A familiar comparison</h3><p>${esc(c.analogy)}</p>
+      <p>Now make the comparison precise. The request is the input, the rules are the mechanism, the current situation is state, and the visible outcome is the output. A technical explanation becomes useful when it states all four and explains what happens when one is missing or invalid.</p>
+      <div class="warning"><strong>Do not stop at the analogy</strong><p>${esc(c.misconception)} An analogy helps you enter the topic; measurements and concrete behavior tell you where the analogy ends.</p></div>
+    </section>
+
+    <section class="lesson-section" id="diagram-${id}"><p class="section-kicker">03 · Visual model</p><h2>Follow the information</h2>${renderDiagram(lesson)}
+      <p>The middle boxes separate the public idea from its implementation. Users care about the contract: valid input should produce a predictable result. Engineers must also understand the mechanism because resource limits, concurrency, invalid state, and partial failure can change that result.</p>
+    </section>
+
+    <section class="lesson-section" id="examples-${id}"><p class="section-kicker">04 · Examples</p><h2>See the concept at three levels</h2>
+      <div class="example-grid">
+        <article><p class="example-label">Everyday comparison</p><h3>Use a familiar system</h3><p>Imagine ${esc(p.analogy)}. Identify the thing being requested, the rule that decides what happens, the place where state is stored, and the signal that tells you the work succeeded. That structure is the bridge to ${esc(lesson.title)}.</p></article>
+        <article><p class="example-label">Small technical example</p><h3>Write the contract first</h3><pre><code>// Model ${esc(lesson.title)} before choosing a library
+input  = captureInput()
+state  = readCurrentState()
+result = applyRule(input, state)
+assert(result.isObservable)
+record(result, cost, errors)</code></pre><p>This pseudocode is deliberately technology-neutral. Replace each line with the concrete operation used in ${esc(lesson.chapter.title)}.</p></article>
+        <article><p class="example-label">Production example</p><h3>Make hidden behavior visible</h3><p>In ${esc(p.system)}, add an identifier to one unit of work. Record its input category, important state transition, duration, output category, and error. The resulting trace shows where ${esc(lesson.title)} participates in the larger system.</p></article>
+      </div>
+    </section>
+
+    <section class="lesson-section" id="internals-${id}"><p class="section-kicker">05 · Under the hood</p><h2>What actually happens</h2>
+      <ol class="process-list"><li><strong>Receive:</strong> a caller provides input under an expected contract.</li><li><strong>Validate:</strong> the system rejects malformed, unsafe, unavailable, or out-of-range input.</li><li><strong>Resolve:</strong> the implementation reads the state or dependency needed for ${esc(lesson.title)}.</li><li><strong>Transform:</strong> rules change data, choose a path, or coordinate another component.</li><li><strong>Commit:</strong> the result becomes visible, durable, or available to the next stage.</li><li><strong>Observe:</strong> the system exposes ${esc(p.evidence)} so a person can verify the result.</li></ol>
+      <h3>Questions an engineer asks</h3><p>Who owns the state? What is the unit of work? Which operation can be repeated safely? What happens when execution stops halfway? Where is the slowest boundary? Which guarantee is essential, and which is merely convenient?</p>
+      <h3>Trade-offs</h3><div class="tradeoff-table"><div><strong>Simplicity</strong><span>Fewer moving parts are easier to explain and debug.</span></div><div><strong>Performance</strong><span>Extra indexing, caching, parallelism, or specialization can reduce time but add state.</span></div><div><strong>Correctness</strong><span>Stronger validation and guarantees cost work but prevent ambiguous results.</span></div><div><strong>Operability</strong><span>Logs and measurements cost storage and attention but shorten investigations.</span></div></div>
+    </section>
+
+    <section class="lesson-section" id="practice-${id}"><p class="section-kicker">06 · Guided practice</p><h2>Build the smallest observable version</h2>
+      <div class="exercise"><h3>Exercise A — explain and draw</h3><ol><li>Write a two-sentence definition of ${esc(lesson.title)} for a learner who has never seen it.</li><li>Draw four boxes: input, state, operation, output.</li><li>Add one success path and one failure path.</li><li>Circle the first boundary you could measure or log.</li></ol><p><strong>Done when:</strong> another person can follow the drawing without needing you to explain missing arrows.</p></div>
+      <div class="exercise"><h3>Exercise B — make a primitive</h3><ol><li>Create a tiny program, command sequence, table, or paper simulation for ${esc(lesson.title)}.</li><li>Use one normal input, one boundary input, and one invalid input.</li><li>Record ${esc(p.evidence)} before and after each run.</li><li>Change one assumption and predict the result before running again.</li></ol><p><strong>Done when:</strong> you can point to evidence that supports or disproves your prediction.</p></div>
+      <div class="exercise"><h3>Exercise C — break it on purpose</h3><ol><li>Remove a required input or dependency.</li><li>Repeat an operation that may not be safe to repeat.</li><li>Increase the workload until a limit becomes visible.</li><li>Improve the error so it tells the next engineer what failed and where to look.</li></ol></div>
+    </section>
+
+    <section class="lesson-section" id="case-${id}"><p class="section-kicker">07 · Real-world problem</p><h2>Investigate a failure under pressure</h2>
+      <div class="case-study"><p><strong>Scenario:</strong> ${esc(p.stakeholder)} reports that a previously reliable action is now slow or incorrect for some inputs. The first guess blames ${esc(lesson.title)}, but there is no evidence yet.</p>
+      <h3>Your task</h3><ol><li>Define the expected behavior and the affected unit of work.</li><li>Collect a good case and a bad case with the same observation points.</li><li>Find the earliest step where their state diverges.</li><li>Form three hypotheses: input, mechanism, and dependency.</li><li>Run the cheapest test that can eliminate one hypothesis.</li><li>Propose a fix, a regression check, and one production signal.</li></ol>
+      <h3>Decision record</h3><p>Write five short lines: context, evidence, decision, trade-off, and follow-up. This turns an isolated fix into reusable engineering knowledge.</p></div>
+    </section>
+
+    <section class="lesson-section" id="extend-${id}"><p class="section-kicker">08 · Extension</p><h2>Connect it to the larger system</h2>
+      <p>Revisit ${esc(lesson.title)} at three scales. At micro scale, inspect one operation and its state. At component scale, identify its callers and dependencies. At system scale, ask how traffic, failure, security, cost, and team ownership change the design.</p>
+      <ul><li><strong>Compare:</strong> find another technique in ${esc(lesson.sectionTitle)} that solves a similar problem. Write when you would choose each.</li><li><strong>Measure:</strong> choose a metric for speed, capacity, accuracy, reliability, or maintainability and explain why it represents user impact.</li><li><strong>Teach:</strong> make a one-minute explanation using one analogy, one diagram, and one counterexample.</li><li><strong>Use AI carefully:</strong> ask an AI tool for three failure modes, then reproduce or reject each using documentation, a test, or direct observation.</li></ul>
+    </section>
+
+    <section class="lesson-section" id="check-${id}"><p class="section-kicker">09 · Self-check</p><h2>Can you explain it without the page?</h2>
+      <details><summary>1. What problem does ${esc(lesson.title)} solve?</summary><p>A strong answer names the situation before the concept, the cost of leaving it unsolved, and the guarantee or capability the concept adds.</p></details>
+      <details><summary>2. Where does state live, and how does it change?</summary><p>Name the owner of the state, the operations allowed to change it, and the evidence that a change completed.</p></details>
+      <details><summary>3. What is one misleading simplification?</summary><p>Explain where the everyday analogy stops matching the technical mechanism.</p></details>
+      <details><summary>4. How would you debug a failure?</summary><p>Start from the expected contract, compare a good and bad case, and locate the earliest observable divergence before proposing a fix.</p></details>
+      <div class="completion"><strong>You are ready to continue when…</strong><p>You can define the concept, draw it, build a primitive, break it, and defend a design choice using evidence.</p></div>
+    </section>
+
+    <nav class="lesson-pagination">
+      ${previous ? `<a href="${lessonSlug(previous)}"><span>← Previous</span><strong>${esc(previous.number)} ${esc(previous.title)}</strong></a>` : `<a href="../index.html"><span>← Back</span><strong>Library contents</strong></a>`}
+      ${next ? `<a class="next" href="${lessonSlug(next)}"><span>Next →</span><strong>${esc(next.number)} ${esc(next.title)}</strong></a>` : `<a class="next" href="../index.html"><span>Complete</span><strong>Return to contents</strong></a>`}
+    </nav>
+  </article>`;
+
+  return layout({ title: `${lesson.number}. ${lesson.title}`, body, active: lesson.chapter.n, depth: 1, pageClass: "reading-page" });
 }
 
 function styles() {
@@ -858,6 +1038,26 @@ blockquote {
   margin: 0 0 10px;
   color: var(--code);
 }
+.lesson-card h3 { margin: 2px 0 10px; }
+.lesson-card h3 a { color: var(--code); text-decoration: none; }
+.lesson-card h3 a:hover { color: var(--accent); }
+.lesson-number,
+.example-label {
+  color: var(--accent-2);
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+.read-link {
+  display: inline-flex;
+  gap: 6px;
+  color: var(--accent);
+  font-weight: 750;
+  text-decoration: none;
+  margin-top: 8px;
+}
 .lesson-card ul {
   margin: 0;
   padding-left: 19px;
@@ -869,6 +1069,170 @@ blockquote {
 .lesson-card strong {
   color: #101828;
 }
+.lesson-page {
+  max-width: 920px;
+  margin: 0 auto;
+  font-size: 1.06rem;
+}
+.breadcrumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: .88rem;
+  margin: 10px 0 36px;
+}
+.breadcrumbs a { color: var(--accent); text-decoration: none; }
+.lesson-hero { padding: 0 0 30px; border-bottom: 1px solid var(--line); }
+.lesson-hero h1 { max-width: 850px; }
+.lead { font-size: 1.24rem; color: #475467; max-width: 760px; }
+.lesson-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.lesson-meta span {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #475467;
+  font-size: .82rem;
+}
+.on-this-page {
+  margin: 30px 0;
+  padding: 20px;
+  background: #edf7f5;
+  border-left: 4px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+}
+.on-this-page nav { display: flex; flex-wrap: wrap; gap: 7px 14px; margin-top: 10px; }
+.on-this-page a { color: #0f5f59; font-size: .9rem; text-decoration: none; }
+.lesson-section {
+  scroll-margin-top: 20px;
+  padding: 38px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+.lesson-section h2 { font-size: clamp(1.7rem, 3vw, 2.55rem); }
+.lesson-section h3 { font-size: 1.18rem; margin: 28px 0 8px; }
+.lesson-section p,
+.lesson-section li { color: #344054; }
+.section-kicker {
+  color: var(--accent-2) !important;
+  font-size: .78rem;
+  font-weight: 850;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.callout,
+.warning,
+.completion {
+  margin: 22px 0;
+  padding: 18px 20px;
+  border-radius: 10px;
+}
+.callout { background: #eaf3fb; border: 1px solid #c9deef; }
+.warning { background: #fff7e6; border: 1px solid #ead19b; }
+.completion { background: #e7f4f1; border: 1px solid #b9ddd6; }
+.callout p,
+.warning p,
+.completion p { margin: 6px 0 0; }
+.check-list { display: grid; gap: 7px; }
+.diagram {
+  margin: 22px 0;
+  padding: 20px;
+  background: #102a43;
+  color: white;
+  border-radius: 14px;
+  overflow-x: auto;
+}
+.diagram figcaption { font-weight: 800; margin-bottom: 12px; }
+.diagram svg { display: block; width: 100%; min-width: 720px; }
+.diagram rect { fill: #173f5f; stroke: #74c9bd; stroke-width: 2; }
+.diagram text { fill: white; font: 700 15px Inter, sans-serif; }
+.diagram text.small { fill: #bcd4e6; font-size: 11px; font-weight: 500; }
+.diagram line { stroke: #74c9bd; stroke-width: 2; }
+.diagram marker path { fill: #74c9bd; }
+.diagram > p { color: #d8e5ee; font-size: .9rem; margin: 10px 0 0; }
+.example-grid { display: grid; gap: 14px; }
+.example-grid article,
+.exercise,
+.case-study {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 14px 0;
+}
+.example-grid article h3,
+.exercise h3,
+.case-study h3 { margin-top: 4px; }
+pre {
+  overflow-x: auto;
+  padding: 16px;
+  border-radius: 9px;
+  background: #0b1f33;
+  color: #e5f0f7;
+  font-size: .9rem;
+  line-height: 1.55;
+}
+.process-list { counter-reset: steps; list-style: none; padding: 0; }
+.process-list li {
+  position: relative;
+  padding: 4px 0 18px 46px;
+  min-height: 38px;
+}
+.process-list li::before {
+  counter-increment: steps;
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-weight: 800;
+}
+.tradeoff-table { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.tradeoff-table div { display: grid; gap: 5px; padding: 16px; background: var(--panel); }
+.tradeoff-table span { color: var(--muted); font-size: .93rem; }
+.exercise ol,
+.case-study ol { padding-left: 22px; }
+.exercise li,
+.case-study li { margin: 8px 0; }
+details {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin: 10px 0;
+}
+summary { cursor: pointer; font-weight: 750; color: var(--code); }
+details p { margin-bottom: 2px; }
+.lesson-pagination {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 38px 0 70px;
+}
+.lesson-pagination a {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  padding: 16px;
+  text-decoration: none;
+}
+.lesson-pagination a.next { text-align: right; }
+.lesson-pagination span { color: var(--accent); font-size: .82rem; }
+.lesson-pagination strong { color: var(--code); font-size: .92rem; }
 @media (max-width: 900px) {
   .sidebar {
     position: static;
@@ -885,12 +1249,16 @@ blockquote {
   .lesson-grid {
     grid-template-columns: 1fr;
   }
+  .tradeoff-table,
+  .lesson-pagination { grid-template-columns: 1fr; }
+  .lesson-pagination a.next { text-align: left; }
 }
 `;
 }
 
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(chapterDir, { recursive: true });
+mkdirSync(lessonDir, { recursive: true });
 mkdirSync(assetDir, { recursive: true });
 writeFileSync(join(assetDir, "styles.css"), styles(), "utf8");
 writeFileSync(join(outDir, "index.html"), renderIndex(), "utf8");
@@ -898,5 +1266,8 @@ writeFileSync(join(outDir, "toc.html"), renderIndex(), "utf8");
 chapters.forEach((chapter, index) => {
   writeFileSync(join(chapterDir, slug(chapter)), renderChapter(chapter, index), "utf8");
 });
+lessons.forEach((lesson, index) => {
+  writeFileSync(join(lessonDir, lessonSlug(lesson)), renderLesson(lesson, index), "utf8");
+});
 
-console.log(`Generated ${chapters.length + 2} HTML files in ${outDir}`);
+console.log(`Generated ${chapters.length + lessons.length + 2} HTML files (${lessons.length} full lesson pages) in ${outDir}`);

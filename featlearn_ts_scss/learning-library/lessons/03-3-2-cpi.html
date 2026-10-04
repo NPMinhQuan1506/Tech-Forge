@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>03.3.2. CPI</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="reading-page">
+  <aside class="sidebar">
+    <a class="brand" href="../index.html">
+      <strong>Tech Forge</strong>
+      <span>Learning Library</span>
+    </a>
+    <nav><a class="" href="../chapters/00-introduction.html"><span>00</span>Introduction</a><a class="" href="../chapters/01-information-bits-and-representation.html"><span>01</span>Information, Bits, And Representation</a><a class="" href="../chapters/02-from-logic-to-hardware.html"><span>02</span>From Logic To Hardware</a><a class="active" href="../chapters/03-computer-architecture.html"><span>03</span>Computer Architecture</a><a class="" href="../chapters/04-operating-systems.html"><span>04</span>Operating Systems</a><a class="" href="../chapters/05-process-threads-and-memory.html"><span>05</span>Process, Threads, And Memory</a><a class="" href="../chapters/06-toolchain-and-executables.html"><span>06</span>Toolchain And Executables</a><a class="" href="../chapters/07-programming-fundamentals.html"><span>07</span>Programming Fundamentals</a><a class="" href="../chapters/08-programming-paradigms.html"><span>08</span>Programming Paradigms</a><a class="" href="../chapters/09-data-structures.html"><span>09</span>Data Structures</a><a class="" href="../chapters/10-algorithms.html"><span>10</span>Algorithms</a><a class="" href="../chapters/11-internet-and-web-foundations.html"><span>11</span>Internet And Web Foundations</a><a class="" href="../chapters/12-html-css-and-javascript.html"><span>12</span>HTML, CSS, And JavaScript</a><a class="" href="../chapters/13-typescript-and-frontend-engineering.html"><span>13</span>TypeScript And Frontend Engineering</a><a class="" href="../chapters/14-react-and-ui-systems.html"><span>14</span>React And UI Systems</a><a class="" href="../chapters/15-backend-engineering.html"><span>15</span>Backend Engineering</a><a class="" href="../chapters/16-databases.html"><span>16</span>Databases</a><a class="" href="../chapters/17-networking-deep-dive.html"><span>17</span>Networking Deep Dive</a><a class="" href="../chapters/18-distributed-systems.html"><span>18</span>Distributed Systems</a><a class="" href="../chapters/19-software-engineering.html"><span>19</span>Software Engineering</a><a class="" href="../chapters/20-software-architecture.html"><span>20</span>Software Architecture</a><a class="" href="../chapters/21-devops-and-cloud.html"><span>21</span>DevOps And Cloud</a><a class="" href="../chapters/22-security.html"><span>22</span>Security</a><a class="" href="../chapters/23-performance-and-observability.html"><span>23</span>Performance And Observability</a><a class="" href="../chapters/24-ai-foundations.html"><span>24</span>AI Foundations</a><a class="" href="../chapters/25-math-for-ai.html"><span>25</span>Math For AI</a><a class="" href="../chapters/26-machine-learning-and-deep-learning.html"><span>26</span>Machine Learning And Deep Learning</a><a class="" href="../chapters/27-llm-engineering.html"><span>27</span>LLM Engineering</a><a class="" href="../chapters/28-ai-augmented-software-engineering.html"><span>28</span>AI-Augmented Software Engineering</a><a class="" href="../chapters/29-learning-paths.html"><span>29</span>Learning Paths</a><a class="" href="../chapters/30-build-primitive-systems.html"><span>30</span>Build Primitive Systems</a><a class="" href="../chapters/31-follow-one-request-through-the-system.html"><span>31</span>Follow One Request Through The System</a><a class="" href="../chapters/32-reference-library.html"><span>32</span>Reference Library</a></nav>
+  </aside>
+  <main class="page">
+    <article class="lesson-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="../index.html">Library</a><span>›</span>
+      <a href="../chapters/03-computer-architecture.html">Chapter 03</a><span>›</span>
+      <span>03.3.2</span>
+    </nav>
+    <header class="lesson-hero">
+      <p class="eyebrow">Part I. Computer From The Bottom Up · CPU Performance</p>
+      <h1>03.3.2. CPI</h1>
+      <p class="lead">Understand CPI from its purpose and simplest model to its internal behavior, trade-offs, debugging signals, and production use.</p>
+      <div class="lesson-meta"><span>25–40 min read</span><span>20–45 min practice</span><span>Beginner-friendly explanation</span></div>
+    </header>
+
+    <aside class="on-this-page"><strong>On this page</strong><nav>
+      <a href="#goals-03-3-2">Learning goals</a><a href="#theory-03-3-2">Theory</a><a href="#diagram-03-3-2">Diagram</a>
+      <a href="#examples-03-3-2">Examples</a><a href="#internals-03-3-2">Under the hood</a><a href="#practice-03-3-2">Practice</a>
+      <a href="#case-03-3-2">Real problem</a><a href="#extend-03-3-2">Go further</a><a href="#check-03-3-2">Self-check</a>
+    </nav></aside>
+
+    <section class="lesson-section" id="goals-03-3-2"><p class="section-kicker">01 · Orientation</p><h2>What you will learn</h2>
+      <p>By the end, you should be able to explain CPI without jargon, draw its smallest useful model, recognize it inside a small CPU and memory system, and choose evidence that confirms whether it works.</p>
+      <div class="callout"><strong>Prerequisite check</strong><p>You only need the chapter idea: CPU, instruction cycle, memory hierarchy, cache, buses, interrupts, and parallel hardware. If a term is unfamiliar, keep reading; the first example builds the model from ordinary experience.</p></div>
+      <ul class="check-list"><li>State the problem the concept addresses.</li><li>Identify input, internal state, operation, output, and failure boundary.</li><li>Compare at least two implementation choices.</li><li>Verify a claim with observable evidence.</li></ul>
+    </section>
+
+    <section class="lesson-section" id="theory-03-3-2"><p class="section-kicker">02 · Core theory</p><h2>Start with the idea, not the jargon</h2>
+      <h3>A plain-language definition</h3><p>CPI is a concept in CPU Performance. Treat it as a named tool or rule that helps us reason about Computer Architecture. The name matters less than the behavior: what goes in, what changes, what comes out, and which guarantees remain true.</p>
+      <h3>Why this concept exists</h3><p>Without a clear model of CPI, engineers tend to memorize syntax or copy a solution while missing its limits. The concept exists because a recurring problem inside a computer needs a shared, testable way to describe and solve it.</p>
+      <h3>A familiar comparison</h3><p>Think of CPI like a workshop where simple switches, labels, and storage drawers combine into a machine. The comparison is intentionally incomplete, but it gives you a first picture. After that picture is clear, replace each familiar object with the real technical component and follow the data step by step.</p>
+      <p>Now make the comparison precise. The request is the input, the rules are the mechanism, the current situation is state, and the visible outcome is the output. A technical explanation becomes useful when it states all four and explains what happens when one is missing or invalid.</p>
+      <div class="warning"><strong>Do not stop at the analogy</strong><p>A common mistake is to treat CPI as a product name or a magic command. It is more useful to see it as a relationship between state, operations, and constraints. Different technologies can implement the same idea with different costs. An analogy helps you enter the topic; measurements and concrete behavior tell you where the analogy ends.</p></div>
+    </section>
+
+    <section class="lesson-section" id="diagram-03-3-2"><p class="section-kicker">03 · Visual model</p><h2>Follow the information</h2><figure class="diagram">
+    <figcaption>A simple mental model for CPI</figcaption>
+    <svg viewBox="0 0 940 230" role="img" aria-label="Flow from input through CPI to an observable result">
+      <defs><marker id="arrow-03-3-2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"></path></marker></defs>
+      <g transform="translate(25,65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">Input / state</text><text class="small" x="95" y="64" text-anchor="middle">What we know</text></g><g transform="translate(255,65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">CPI</text><text class="small" x="95" y="64" text-anchor="middle">The idea being studied</text></g><g transform="translate(485,65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">Mechanism</text><text class="small" x="95" y="64" text-anchor="middle">What happens inside</text></g><g transform="translate(715,65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">Observable result</text><text class="small" x="95" y="64" text-anchor="middle">What we can verify</text></g>
+      <line x1="215" y1="111" x2="248" y2="111" marker-end="url(#arrow-03-3-2)"></line><line x1="445" y1="111" x2="478" y2="111" marker-end="url(#arrow-03-3-2)"></line><line x1="675" y1="111" x2="708" y2="111" marker-end="url(#arrow-03-3-2)"></line>
+    </svg>
+    <p>Read the diagram from left to right. At every arrow, ask: what information crosses this boundary, who owns it, and how could we observe it?</p>
+  </figure>
+      <p>The middle boxes separate the public idea from its implementation. Users care about the contract: valid input should produce a predictable result. Engineers must also understand the mechanism because resource limits, concurrency, invalid state, and partial failure can change that result.</p>
+    </section>
+
+    <section class="lesson-section" id="examples-03-3-2"><p class="section-kicker">04 · Examples</p><h2>See the concept at three levels</h2>
+      <div class="example-grid">
+        <article><p class="example-label">Everyday comparison</p><h3>Use a familiar system</h3><p>Imagine a workshop where simple switches, labels, and storage drawers combine into a machine. Identify the thing being requested, the rule that decides what happens, the place where state is stored, and the signal that tells you the work succeeded. That structure is the bridge to CPI.</p></article>
+        <article><p class="example-label">Small technical example</p><h3>Write the contract first</h3><pre><code>// Model CPI before choosing a library
+input  = captureInput()
+state  = readCurrentState()
+result = applyRule(input, state)
+assert(result.isObservable)
+record(result, cost, errors)</code></pre><p>This pseudocode is deliberately technology-neutral. Replace each line with the concrete operation used in Computer Architecture.</p></article>
+        <article><p class="example-label">Production example</p><h3>Make hidden behavior visible</h3><p>In a small CPU and memory system, add an identifier to one unit of work. Record its input category, important state transition, duration, output category, and error. The resulting trace shows where CPI participates in the larger system.</p></article>
+      </div>
+    </section>
+
+    <section class="lesson-section" id="internals-03-3-2"><p class="section-kicker">05 · Under the hood</p><h2>What actually happens</h2>
+      <ol class="process-list"><li><strong>Receive:</strong> a caller provides input under an expected contract.</li><li><strong>Validate:</strong> the system rejects malformed, unsafe, unavailable, or out-of-range input.</li><li><strong>Resolve:</strong> the implementation reads the state or dependency needed for CPI.</li><li><strong>Transform:</strong> rules change data, choose a path, or coordinate another component.</li><li><strong>Commit:</strong> the result becomes visible, durable, or available to the next stage.</li><li><strong>Observe:</strong> the system exposes bit patterns, register values, memory addresses, timing, and instruction traces so a person can verify the result.</li></ol>
+      <h3>Questions an engineer asks</h3><p>Who owns the state? What is the unit of work? Which operation can be repeated safely? What happens when execution stops halfway? Where is the slowest boundary? Which guarantee is essential, and which is merely convenient?</p>
+      <h3>Trade-offs</h3><div class="tradeoff-table"><div><strong>Simplicity</strong><span>Fewer moving parts are easier to explain and debug.</span></div><div><strong>Performance</strong><span>Extra indexing, caching, parallelism, or specialization can reduce time but add state.</span></div><div><strong>Correctness</strong><span>Stronger validation and guarantees cost work but prevent ambiguous results.</span></div><div><strong>Operability</strong><span>Logs and measurements cost storage and attention but shorten investigations.</span></div></div>
+    </section>
+
+    <section class="lesson-section" id="practice-03-3-2"><p class="section-kicker">06 · Guided practice</p><h2>Build the smallest observable version</h2>
+      <div class="exercise"><h3>Exercise A — explain and draw</h3><ol><li>Write a two-sentence definition of CPI for a learner who has never seen it.</li><li>Draw four boxes: input, state, operation, output.</li><li>Add one success path and one failure path.</li><li>Circle the first boundary you could measure or log.</li></ol><p><strong>Done when:</strong> another person can follow the drawing without needing you to explain missing arrows.</p></div>
+      <div class="exercise"><h3>Exercise B — make a primitive</h3><ol><li>Create a tiny program, command sequence, table, or paper simulation for CPI.</li><li>Use one normal input, one boundary input, and one invalid input.</li><li>Record bit patterns, register values, memory addresses, timing, and instruction traces before and after each run.</li><li>Change one assumption and predict the result before running again.</li></ol><p><strong>Done when:</strong> you can point to evidence that supports or disproves your prediction.</p></div>
+      <div class="exercise"><h3>Exercise C — break it on purpose</h3><ol><li>Remove a required input or dependency.</li><li>Repeat an operation that may not be safe to repeat.</li><li>Increase the workload until a limit becomes visible.</li><li>Improve the error so it tells the next engineer what failed and where to look.</li></ol></div>
+    </section>
+
+    <section class="lesson-section" id="case-03-3-2"><p class="section-kicker">07 · Real-world problem</p><h2>Investigate a failure under pressure</h2>
+      <div class="case-study"><p><strong>Scenario:</strong> a systems programmer diagnosing why a program behaves differently from its source code reports that a previously reliable action is now slow or incorrect for some inputs. The first guess blames CPI, but there is no evidence yet.</p>
+      <h3>Your task</h3><ol><li>Define the expected behavior and the affected unit of work.</li><li>Collect a good case and a bad case with the same observation points.</li><li>Find the earliest step where their state diverges.</li><li>Form three hypotheses: input, mechanism, and dependency.</li><li>Run the cheapest test that can eliminate one hypothesis.</li><li>Propose a fix, a regression check, and one production signal.</li></ol>
+      <h3>Decision record</h3><p>Write five short lines: context, evidence, decision, trade-off, and follow-up. This turns an isolated fix into reusable engineering knowledge.</p></div>
+    </section>
+
+    <section class="lesson-section" id="extend-03-3-2"><p class="section-kicker">08 · Extension</p><h2>Connect it to the larger system</h2>
+      <p>Revisit CPI at three scales. At micro scale, inspect one operation and its state. At component scale, identify its callers and dependencies. At system scale, ask how traffic, failure, security, cost, and team ownership change the design.</p>
+      <ul><li><strong>Compare:</strong> find another technique in CPU Performance that solves a similar problem. Write when you would choose each.</li><li><strong>Measure:</strong> choose a metric for speed, capacity, accuracy, reliability, or maintainability and explain why it represents user impact.</li><li><strong>Teach:</strong> make a one-minute explanation using one analogy, one diagram, and one counterexample.</li><li><strong>Use AI carefully:</strong> ask an AI tool for three failure modes, then reproduce or reject each using documentation, a test, or direct observation.</li></ul>
+    </section>
+
+    <section class="lesson-section" id="check-03-3-2"><p class="section-kicker">09 · Self-check</p><h2>Can you explain it without the page?</h2>
+      <details><summary>1. What problem does CPI solve?</summary><p>A strong answer names the situation before the concept, the cost of leaving it unsolved, and the guarantee or capability the concept adds.</p></details>
+      <details><summary>2. Where does state live, and how does it change?</summary><p>Name the owner of the state, the operations allowed to change it, and the evidence that a change completed.</p></details>
+      <details><summary>3. What is one misleading simplification?</summary><p>Explain where the everyday analogy stops matching the technical mechanism.</p></details>
+      <details><summary>4. How would you debug a failure?</summary><p>Start from the expected contract, compare a good and bad case, and locate the earliest observable divergence before proposing a fix.</p></details>
+      <div class="completion"><strong>You are ready to continue when…</strong><p>You can define the concept, draw it, build a primitive, break it, and defend a design choice using evidence.</p></div>
+    </section>
+
+    <nav class="lesson-pagination">
+      <a href="03-3-1-clock-cycle.html"><span>← Previous</span><strong>03.3.1 Clock cycle</strong></a>
+      <a class="next" href="03-3-3-pipeline.html"><span>Next →</span><strong>03.3.3 Pipeline</strong></a>
+    </nav>
+  </article>
+  </main>
+</body>
+</html>
