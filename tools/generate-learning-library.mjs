@@ -13,7 +13,7 @@ const parts = [
     chapters: [
       {
         n: "00",
-        title: "Introduction",
+        title: "Introduction — Start Here",
         summary:
           "Welcome, learning philosophy, topic template, and the operating principles of the library.",
         sections: [
@@ -506,11 +506,40 @@ function esc(value) {
 
 function layout({ title, body, active = "", depth = 0, pageClass = "" }) {
   const prefix = depth ? "../" : "";
-  const nav = chapters
-    .map((chapter) => {
-      const href = `${prefix}chapters/${slug(chapter)}`;
-      const cls = active === chapter.n ? "active" : "";
-      return `<a class="${cls}" href="${href}"><span>${chapter.n}</span>${esc(chapter.title)}</a>`;
+  const activeChapter = chapters.find((chapter) => chapter.n === active);
+  const nav = parts
+    .map((part) => {
+      const partActive = activeChapter?.partId === part.id;
+      const chapterItems = part.chapters.map((chapter) => {
+        const chapterActive = chapter.n === active;
+        const sectionItems = chapterActive
+          ? chapter.sections.map(([sectionNumber, sectionTitle, sectionLessons]) => {
+              const lessonLinks = sectionLessons.map((lessonTitle, lessonIndex) => {
+                const record = {
+                  number: `${sectionNumber}.${lessonIndex + 1}`,
+                  title: lessonTitle,
+                  sectionNumber,
+                  sectionTitle,
+                  chapter,
+                };
+                return `<a class="nav-lesson" href="${prefix}lessons/${lessonSlug(record)}"><span>${record.number}</span>${esc(lessonTitle)}</a>`;
+              }).join("");
+              return `<details class="nav-section">
+                <summary><span>${sectionNumber}</span>${esc(sectionTitle)}</summary>
+                <div class="nav-lessons">${lessonLinks}</div>
+              </details>`;
+            }).join("")
+          : "";
+        return `<details class="nav-chapter ${chapterActive ? "active" : ""}" ${chapterActive ? "open" : ""}>
+          <summary><span>${chapter.n}</span>${esc(chapter.title)}</summary>
+          <a class="nav-overview" href="${prefix}chapters/${slug(chapter)}">Chapter overview</a>
+          ${sectionItems}
+        </details>`;
+      }).join("");
+      return `<details class="nav-part ${partActive ? "active" : ""}" ${partActive ? "open" : ""}>
+        <summary>${esc(part.title)}</summary>
+        <div class="nav-chapters">${chapterItems}</div>
+      </details>`;
     })
     .join("");
 
@@ -525,10 +554,11 @@ function layout({ title, body, active = "", depth = 0, pageClass = "" }) {
 <body class="${pageClass}">
   <aside class="sidebar">
     <a class="brand" href="${prefix}index.html">
-      <strong>Tech Forge</strong>
-      <span>Learning Library</span>
+      <span class="brand-mark">TF</span>
+      <span class="brand-copy"><strong>Tech Forge</strong><small>Computer Science Library</small></span>
     </a>
-    <nav>${nav}</nav>
+    <a class="toc-link" href="${prefix}index.html">⌂ Full table of contents</a>
+    <nav class="tree-nav" aria-label="Book navigation">${nav}</nav>
   </aside>
   <main class="page">
     ${body}
@@ -544,12 +574,30 @@ function renderIndex() {
       const chapterCards = part.chapters
         .map((chapter) => {
           const sectionList = chapter.sections
-            .map(([num, title, lessons]) => `<li><strong>${num}</strong> ${esc(title)} <span>${lessons.length} lessons</span></li>`)
+            .map(([num, title, sectionLessons]) => {
+              const lessonLinks = sectionLessons.map((lessonTitle, lessonIndex) => {
+                const record = {
+                  number: `${num}.${lessonIndex + 1}`,
+                  title: lessonTitle,
+                  sectionNumber: num,
+                  sectionTitle: title,
+                  chapter,
+                };
+                return `<li><a href="lessons/${lessonSlug(record)}"><span>${record.number}</span>${esc(lessonTitle)}</a></li>`;
+              }).join("");
+              return `<details class="toc-section">
+                <summary><span><strong>${num}</strong> ${esc(title)}</span><small>${sectionLessons.length} lessons</small></summary>
+                <div class="toc-section-body">
+                  <a class="section-overview-link" href="chapters/${slug(chapter)}#${num.replaceAll(".", "-")}">View section overview →</a>
+                  <ol>${lessonLinks}</ol>
+                </div>
+              </details>`;
+            })
             .join("");
           return `<article class="chapter-card">
             <a class="chapter-title" href="chapters/${slug(chapter)}">${chapter.n}. ${esc(chapter.title)}</a>
             <p>${esc(chapter.summary)}</p>
-            <ol>${sectionList}</ol>
+            <div class="toc-sections">${sectionList}</div>
           </article>`;
         })
         .join("");
@@ -564,7 +612,7 @@ function renderIndex() {
     .join("");
 
   const body = `<header class="hero">
-    <p class="eyebrow">Full HTML TOC</p>
+    <p class="eyebrow">The complete engineering curriculum</p>
     <h1>Tech Forge Learning Library</h1>
     <blockquote>
       <p>A learning library for Computer Science, Software Engineering, and AI-era engineering.</p>
@@ -577,6 +625,12 @@ function renderIndex() {
       <span><strong>${chapters.reduce((sum, chapter) => sum + chapter.sections.reduce((s, section) => s + section[2].length, 0), 0)}</strong> lessons</span>
     </div>
   </header>
+  <section class="reading-paths" aria-label="Suggested learning paths">
+    <article><span>01</span><strong>Start from zero</strong><p>Bits → CPU → operating system → programming.</p></article>
+    <article><span>02</span><strong>Build for the web</strong><p>Network → browser → TypeScript → React → backend.</p></article>
+    <article><span>03</span><strong>Engineer production systems</strong><p>Data → distributed systems → cloud → security.</p></article>
+    <article><span>04</span><strong>Work in the AI era</strong><p>Math → ML → LLM systems → AI-assisted engineering.</p></article>
+  </section>
   <section class="manifesto">
     <h2>The Zen Of This Book</h2>
     <ul>
@@ -710,24 +764,234 @@ function profileFor(lesson) {
   };
 }
 
+const chapterExpertise = {
+  "00": {
+    mechanism: "The library uses a repeated learning loop: form a mental model, build the smallest primitive, observe real behavior, break an assumption, and explain the result. This converts passive reading into evidence-backed understanding.",
+    flow: ["Question", "Mental model", "Primitive build", "Observed evidence"],
+    code: "question -> model -> experiment -> evidence -> explanation",
+    failure: "A learner finishes many pages but cannot predict what the system will do or explain why.",
+  },
+  "01": {
+    mechanism: "Computers attach meaning to physical states through conventions. Voltage ranges become bits; fixed-width bit patterns become integers, text, pixels, or instructions only when an encoding and interpretation are agreed upon.",
+    flow: ["Physical signal", "Bit pattern", "Encoding rule", "Human meaning"],
+    code: "13₁₀ = 8 + 4 + 1 = 1101₂\n1101₂ = 1×2³ + 1×2² + 0×2¹ + 1×2⁰",
+    failure: "The same bytes are decoded with the wrong type, width, byte order, or character encoding.",
+  },
+  "02": {
+    mechanism: "Digital hardware composes boolean gates into combinational paths and clocked state. Adders compute values, multiplexers choose inputs, registers remember bits, and a clock defines when new state becomes visible.",
+    flow: ["Input signals", "Logic gates", "Clocked register", "Output signals"],
+    code: "sum = a XOR b\ncarry = a AND b\nnext_register = clock ? sum : register",
+    failure: "A signal arrives after the timing deadline or state changes without the expected clock edge.",
+  },
+  "03": {
+    mechanism: "A CPU repeatedly fetches an instruction, decodes its opcode and operands, executes work, accesses memory, and commits results. Pipelines overlap these stages while caches exploit temporal and spatial locality.",
+    flow: ["Fetch", "Decode", "Execute", "Commit"],
+    code: "PC -> instruction cache -> decoder -> ALU/load-store -> registers",
+    failure: "A cache miss, branch misprediction, dependency, or memory-ordering constraint stalls useful work.",
+  },
+  "04": {
+    mechanism: "The operating system multiplexes hardware while enforcing isolation. Applications cross from user mode into privileged kernel code through system calls; the kernel validates arguments and operates on resources represented by handles such as file descriptors.",
+    flow: ["User process", "System call", "Kernel", "Device or resource"],
+    code: "fd = open(path, READ_ONLY)\nbytes = read(fd, buffer, 4096)\nclose(fd)",
+    failure: "A call violates permissions, references an invalid handle, blocks unexpectedly, or receives only a partial result.",
+  },
+  "05": {
+    mechanism: "A process owns a virtual address space; threads share most process resources but keep separate stacks and execution state. Page tables translate virtual pages to physical frames, while synchronization coordinates shared mutable data.",
+    flow: ["Thread instruction", "Virtual address", "Page translation", "Physical memory"],
+    code: "lock(mutex)\nsharedCounter += 1\nunlock(mutex)",
+    failure: "Unsynchronized access creates a race, locks form a cycle, or memory access triggers an invalid page fault.",
+  },
+  "06": {
+    mechanism: "Source text becomes machine code through parsing, semantic analysis, intermediate representation, optimization, assembly, relocation, and linking. The loader maps executable segments and resolves dynamic dependencies before transferring control to the entry point.",
+    flow: ["Source code", "Object files", "Linked binary", "Loaded process"],
+    code: "source.c -> compiler -> source.o -> linker -> executable -> loader",
+    failure: "A symbol is missing, an ABI differs, relocation cannot be applied, or the runtime loads an incompatible library.",
+  },
+  "07": {
+    mechanism: "A program transforms values under the rules of a language runtime. Types constrain valid operations, control flow chooses execution paths, functions introduce reusable boundaries, and error handling makes failure explicit.",
+    flow: ["Input values", "Control flow", "Function boundary", "Output or error"],
+    code: "function divide(a, b) {\n  if (b === 0) return { ok: false, error: 'division by zero' };\n  return { ok: true, value: a / b };\n}",
+    failure: "Implicit conversion, hidden mutation, invalid state, or an unhandled error breaks the caller's assumptions.",
+  },
+  "08": {
+    mechanism: "Programming paradigms choose where state lives and how behavior is composed. Procedural code sequences operations, objects group state with behavior, functional code emphasizes values and transformations, and event systems react to messages.",
+    flow: ["State model", "Composition rule", "Execution model", "Observable behavior"],
+    code: "nextState = events.reduce(reducer, initialState)",
+    failure: "The chosen paradigm hides ownership, spreads mutation, or makes control flow difficult to trace.",
+  },
+  "09": {
+    mechanism: "A data structure arranges values in memory so selected operations become cheap. Arrays favor locality and indexed access; linked structures favor local insertion; hash tables trade memory for expected constant lookup; trees preserve order and hierarchy.",
+    flow: ["Operation needed", "Memory layout", "Algorithm", "Time and space cost"],
+    code: "index = hash(key) % capacity\nbucket[index].find(entry => entry.key === key)",
+    failure: "Worst-case input, poor locality, excessive resizing, or an invariant violation destroys the expected complexity.",
+  },
+  "10": {
+    mechanism: "An algorithm is a finite procedure whose correctness follows from invariants and whose cost grows with input size. Expert analysis separates asymptotic growth from constant factors, memory behavior, input distribution, and operational constraints.",
+    flow: ["Problem constraints", "Invariant", "Algorithm steps", "Complexity evidence"],
+    code: "while (low <= high) {\n  mid = floor((low + high) / 2)\n  if (a[mid] < target) low = mid + 1\n  else high = mid - 1\n}",
+    failure: "The algorithm is correct for typical input but fails at a boundary, violates its invariant, or exceeds resource limits.",
+  },
+  "11": {
+    mechanism: "A web request crosses naming, addressing, transport, security, and application layers. DNS finds an address, TCP or QUIC transports bytes, TLS authenticates and encrypts, and HTTP gives those bytes request-response semantics.",
+    flow: ["URL and DNS", "Connection and TLS", "HTTP request", "HTTP response"],
+    code: "GET /articles/42 HTTP/1.1\nHost: example.test\nAccept: text/html",
+    failure: "DNS, connection, certificate, timeout, protocol, cache, or application failures can look identical to the user.",
+  },
+  "12": {
+    mechanism: "The browser parses HTML into the DOM, CSS into the CSSOM, combines them into a render tree, performs layout, paints pixels, and runs JavaScript through an event loop that coordinates tasks and microtasks.",
+    flow: ["HTML and CSS", "DOM and CSSOM", "Layout and paint", "Interactive page"],
+    code: "button.addEventListener('click', async () => {\n  const data = await fetch('/api/items').then(r => r.json());\n  render(data);\n});",
+    failure: "Invalid semantics, blocking work, layout instability, inaccessible interaction, or stale DOM state harms the experience.",
+  },
+  "13": {
+    mechanism: "TypeScript performs static analysis before JavaScript runs. Its structural type system models contracts, narrowing proves facts along control flow, and build tooling transforms modules into assets a browser can load.",
+    flow: ["TypeScript source", "Type analysis", "Bundle pipeline", "Browser JavaScript"],
+    code: "type Result<T> = { ok: true; value: T } | { ok: false; error: string };",
+    failure: "An unsafe assertion, inaccurate external type, circular dependency, or build/runtime mismatch bypasses the intended guarantee.",
+  },
+  "14": {
+    mechanism: "React maps state to a tree of elements. Rendering calculates the desired tree; reconciliation compares identities and keys; the commit phase updates the host DOM; effects synchronize with systems outside React.",
+    flow: ["Props and state", "Render tree", "Reconciliation", "DOM commit"],
+    code: "function Counter() {\n  const [count, setCount] = useState(0);\n  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;\n}",
+    failure: "Unstable keys, duplicated state, stale closures, uncontrolled effects, or wide state ownership cause incorrect or wasteful renders.",
+  },
+  "15": {
+    mechanism: "A backend turns an untrusted network request into a validated domain operation and a stable response. Middleware handles cross-cutting policy, application services coordinate use cases, repositories isolate persistence, and idempotency controls retries.",
+    flow: ["HTTP request", "Validation and policy", "Domain operation", "Response and log"],
+    code: "POST /orders\nIdempotency-Key: 7f2...\n{ \"productId\": 42, \"quantity\": 1 }",
+    failure: "Missing validation, confused authorization, unbounded retries, duplicate work, or a leaky transaction boundary corrupts behavior.",
+  },
+  "16": {
+    mechanism: "A database maps logical records to pages on durable storage. Indexes add ordered or hashed access paths, the optimizer selects a plan, transactions coordinate concurrent changes, and a write-ahead log makes recovery possible.",
+    flow: ["SQL query", "Query plan", "Pages and indexes", "Durable result"],
+    code: "EXPLAIN SELECT id, email FROM users WHERE email = 'a@example.test';",
+    failure: "A full scan, stale statistics, lock contention, weak constraint, or transaction anomaly produces slow or incorrect results.",
+  },
+  "17": {
+    mechanism: "Networks split application data into packets routed independently across links. TCP adds ordered reliable byte streams with congestion control; UDP preserves datagram boundaries; TLS negotiates keys and authenticates peers above transport.",
+    flow: ["Application bytes", "Transport segments", "IP packets", "Remote socket"],
+    code: "client -> SYN -> server\nclient <- SYN-ACK <- server\nclient -> ACK -> server",
+    failure: "Loss, reordering, MTU mismatch, congestion, NAT, firewall policy, or asymmetric routing interrupts communication.",
+  },
+  "18": {
+    mechanism: "Distributed systems coordinate state without a shared clock or reliable network. Timeouts create uncertainty, retries require idempotency, replication creates consistency choices, and consensus establishes a single ordered decision among failures.",
+    flow: ["Client intent", "Distributed messages", "Replicated state", "Observable outcome"],
+    code: "if (!seen(idempotencyKey)) {\n  commit(operation);\n  remember(idempotencyKey);\n}",
+    failure: "A partial failure leaves one participant uncertain whether an operation happened, encouraging a duplicate or contradictory action.",
+  },
+  "19": {
+    mechanism: "Software engineering makes change predictable through explicit requirements, small boundaries, automated checks, review, and documentation. Quality is the ability to preserve intended behavior while the system and team evolve.",
+    flow: ["Requirement", "Design and code", "Verification", "Review and release"],
+    code: "Given valid credentials\nWhen the user signs in\nThen a session is created\nAnd no password appears in logs",
+    failure: "Ambiguous acceptance criteria allow individually reasonable implementations to produce the wrong product behavior.",
+  },
+  "20": {
+    mechanism: "Architecture assigns responsibilities and constrains dependencies. Good boundaries follow change patterns, isolate policy from infrastructure, expose explicit contracts, and record trade-offs so future teams understand why the structure exists.",
+    flow: ["Business capability", "Boundary", "Contract", "Deployment topology"],
+    code: "UI -> Application use case -> Domain policy\n                         -> Infrastructure adapter",
+    failure: "A boundary follows a fashionable pattern instead of actual ownership and change, producing distributed coupling.",
+  },
+  "21": {
+    mechanism: "Delivery systems turn reviewed source into reproducible artifacts, deploy them through controlled environments, and compare health signals against release criteria. Infrastructure as code makes operational state reviewable and repeatable.",
+    flow: ["Source commit", "Build and test", "Artifact and deploy", "Health verification"],
+    code: "build -> unit tests -> security scan -> deploy canary -> verify SLO -> promote",
+    failure: "Mutable artifacts, hidden configuration, missing rollback evidence, or environment drift makes a release irreproducible.",
+  },
+  "22": {
+    mechanism: "Security reduces the ways untrusted actors can violate confidentiality, integrity, or availability. Threat modeling identifies assets and trust boundaries; controls prevent, detect, and contain abuse; defense in depth assumes one control can fail.",
+    flow: ["Asset and actor", "Trust boundary", "Security control", "Audit evidence"],
+    code: "authorize(identity, action, resource)\nvalidate(untrustedInput)\nrecord(securityDecision)",
+    failure: "The system authenticates a user but fails to authorize the specific action on the specific resource.",
+  },
+  "23": {
+    mechanism: "Performance work connects user-visible latency and throughput to constrained resources. Observability correlates logs, metrics, and traces so an engineer can move from a symptom to the responsible request, dependency, and line of work.",
+    flow: ["User symptom", "Service metric", "Distributed trace", "Resource bottleneck"],
+    code: "request_duration_seconds{route='/checkout',status='500'}\ntrace_id=abc span=db.query duration=842ms",
+    failure: "Averages hide tail latency, high-cardinality labels overwhelm telemetry, or measurement changes the workload.",
+  },
+  "24": {
+    mechanism: "An AI system learns statistical patterns from data and applies them during inference. Product quality depends on the task definition, dataset, evaluation distribution, failure cost, feedback loop, and human decision boundary.",
+    flow: ["Task and data", "Training process", "Model inference", "Measured decision"],
+    code: "quality = evaluate(model, goldenSet)\nship only if quality >= threshold and safetyChecksPass",
+    failure: "A benchmark improves while real users encounter distribution shift, biased data, or a failure mode the metric ignores.",
+  },
+  "25": {
+    mechanism: "Vectors represent quantities with direction and magnitude, matrices transform spaces, probability represents uncertainty, and optimization changes parameters in the direction that reduces a chosen loss.",
+    flow: ["Numeric representation", "Transformation", "Loss measurement", "Parameter update"],
+    code: "prediction = W · x + b\ngradient = ∂loss/∂W\nW = W - learningRate × gradient",
+    failure: "Poor scaling, unstable gradients, invalid independence assumptions, or an unsuitable objective prevents useful learning.",
+  },
+  "26": {
+    mechanism: "Machine learning estimates a function from examples. Neural networks compose parameterized layers; forward propagation produces predictions, backpropagation computes gradients, and an optimizer updates parameters across batches and epochs.",
+    flow: ["Training batch", "Forward pass", "Loss and gradients", "Parameter update"],
+    code: "optimizer.zero_grad()\nloss = criterion(model(inputs), labels)\nloss.backward()\noptimizer.step()",
+    failure: "The model memorizes training data, learns leakage, underperforms on a subgroup, or is evaluated with the wrong metric.",
+  },
+  "27": {
+    mechanism: "A language model converts text to tokens, maps them into vectors, applies attention across a bounded context, and predicts a probability distribution for the next token. LLM applications add retrieval, tools, schemas, memory, and evaluation.",
+    flow: ["Prompt and context", "Tokens and attention", "Model distribution", "Output or tool call"],
+    code: "context = retrieve(query)\nanswer = model({ instructions, context, query })\nassert(schema.safeParse(answer))",
+    failure: "Missing context, prompt injection, hallucination, schema drift, uncontrolled tools, or weak evaluation creates confident but unsafe output.",
+  },
+  "28": {
+    mechanism: "AI-assisted engineering separates generation from acceptance. A human defines the problem and constraints; AI proposes artifacts or hypotheses; deterministic tools and runtime evidence verify them; review assigns accountability.",
+    flow: ["Specification", "AI proposal", "Tool verification", "Human acceptance"],
+    code: "spec -> generated change -> typecheck/tests -> runtime evidence -> review",
+    failure: "Fluent output is accepted without checking hidden dependencies, security boundaries, licenses, or actual runtime behavior.",
+  },
+  "29": {
+    mechanism: "A learning path orders prerequisites so each project reuses earlier mental models at a larger scale. Milestones require visible artifacts and explanations, making progress measurable beyond consumed content.",
+    flow: ["Prerequisite", "Focused lesson", "Integrated project", "Evidence portfolio"],
+    code: "learn -> build -> observe -> explain -> revisit at larger scale",
+    failure: "The learner follows a tool list, skips foundations, and cannot transfer knowledge when the framework changes.",
+  },
+  "30": {
+    mechanism: "Primitive projects recreate a small version of a familiar system to expose its invariants. The goal is not production completeness; it is to make representation, state transitions, interfaces, and failure behavior observable.",
+    flow: ["System contract", "Minimal primitive", "Instrumented experiment", "Design reflection"],
+    code: "implement the invariant first\nadd observation second\nadd convenience last",
+    failure: "The project copies a library API without revealing the mechanism the exercise was meant to teach.",
+  },
+  "31": {
+    mechanism: "One user action crosses browser events, JavaScript scheduling, DNS and transport, server routing, application policy, database planning and storage, then returns through rendering to pixels. Correlation IDs connect these layers.",
+    flow: ["User event", "Network request", "Server and database", "Render and paint"],
+    code: "click -> fetch -> HTTP -> route -> query -> response -> state -> render -> paint",
+    failure: "Each layer looks healthy in isolation while cross-layer latency or mismatched contracts break the complete request.",
+  },
+  "32": {
+    mechanism: "A reference library turns recurring lookup work into curated, versioned knowledge. Good entries define a term, show context and contrast, link to primary sources, and state when the information was verified.",
+    flow: ["Term or problem", "Concise reference", "Primary source", "Applied example"],
+    code: "term | definition | example | contrast | source | verified date",
+    failure: "A cheat sheet removes the conditions and trade-offs that made the original rule correct.",
+  },
+};
+
+function expertFor(lesson) {
+  return chapterExpertise[lesson.chapter.n] ?? chapterExpertise["00"];
+}
+
 function conceptModel(lesson) {
   const p = profileFor(lesson);
+  const expert = expertFor(lesson);
+  const comparison = lesson.title.includes(" vs ")
+    ? `${lesson.title} compares two approaches. Evaluate them against representation, behavior, cost, limits, and the situation in which each is the safer choice.`
+    : null;
   return {
-    definition: `${lesson.title} is a concept in ${lesson.sectionTitle}. Treat it as a named tool or rule that helps us reason about ${lesson.chapter.title}. The name matters less than the behavior: what goes in, what changes, what comes out, and which guarantees remain true.`,
-    purpose: `Without a clear model of ${lesson.title}, engineers tend to memorize syntax or copy a solution while missing its limits. The concept exists because a recurring problem ${p.place} needs a shared, testable way to describe and solve it.`,
+    definition: comparison ?? `${lesson.title} is the focus of this lesson inside ${lesson.sectionTitle}. Its technical meaning comes from the role it plays in this mechanism: ${expert.mechanism}`,
+    purpose: `The practical reason to study ${lesson.title} is to predict behavior rather than memorize a label. ${expert.failure} Understanding the contract, internal state, and observable evidence lets an engineer isolate that failure instead of guessing.`,
     analogy: `Think of ${lesson.title} like ${p.analogy}. The comparison is intentionally incomplete, but it gives you a first picture. After that picture is clear, replace each familiar object with the real technical component and follow the data step by step.`,
-    misconception: `A common mistake is to treat ${lesson.title} as a product name or a magic command. It is more useful to see it as a relationship between state, operations, and constraints. Different technologies can implement the same idea with different costs.`,
+    misconception: `A common mistake is to learn ${lesson.title} as an isolated definition. In a real system it participates in a chain: ${expert.flow.join(" → ")}. Its value and its failure modes only become clear inside that chain.`,
   };
 }
 
 function renderDiagram(lesson) {
-  const labels = ["Input / state", lesson.title, "Mechanism", "Observable result"];
+  const expert = expertFor(lesson);
+  const labels = expert.flow.map((label, index) => index === 1 ? `${label}: ${lesson.title}` : label);
   const markerId = `arrow-${lesson.number.replaceAll(".", "-")}`;
   return `<figure class="diagram">
     <figcaption>A simple mental model for ${esc(lesson.title)}</figcaption>
     <svg viewBox="0 0 940 230" role="img" aria-label="Flow from input through ${esc(lesson.title)} to an observable result">
       <defs><marker id="${markerId}" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z"></path></marker></defs>
-      ${labels.map((label, index) => `<g transform="translate(${25 + index * 230},65)"><rect width="190" height="92" rx="14"></rect><text x="95" y="42" text-anchor="middle">${esc(label)}</text><text class="small" x="95" y="64" text-anchor="middle">${index === 0 ? "What we know" : index === 1 ? "The idea being studied" : index === 2 ? "What happens inside" : "What we can verify"}</text></g>`).join("")}
+      ${labels.map((label, index) => `<g transform="translate(${25 + index * 230},65)"><rect width="190" height="92" rx="14"></rect><foreignObject x="12" y="17" width="166" height="58"><div class="svg-label">${esc(label)}</div></foreignObject><text class="small" x="95" y="78" text-anchor="middle">${index === 0 ? "Input boundary" : index === 1 ? "Focus of this lesson" : index === 2 ? "Internal mechanism" : "Evidence and outcome"}</text></g>`).join("")}
       ${[0, 1, 2].map((index) => `<line x1="${215 + index * 230}" y1="111" x2="${248 + index * 230}" y2="111" marker-end="url(#${markerId})"></line>`).join("")}
     </svg>
     <p>Read the diagram from left to right. At every arrow, ask: what information crosses this boundary, who owns it, and how could we observe it?</p>
@@ -739,6 +1003,7 @@ function renderLesson(lesson, index) {
   const next = lessons[index + 1];
   const p = profileFor(lesson);
   const c = conceptModel(lesson);
+  const expert = expertFor(lesson);
   const id = lesson.number.replaceAll(".", "-");
   const body = `<article class="lesson-page">
     <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -769,7 +1034,8 @@ function renderLesson(lesson, index) {
       <h3>A plain-language definition</h3><p>${esc(c.definition)}</p>
       <h3>Why this concept exists</h3><p>${esc(c.purpose)}</p>
       <h3>A familiar comparison</h3><p>${esc(c.analogy)}</p>
-      <p>Now make the comparison precise. The request is the input, the rules are the mechanism, the current situation is state, and the visible outcome is the output. A technical explanation becomes useful when it states all four and explains what happens when one is missing or invalid.</p>
+      <h3>The technical core</h3><p>${esc(expert.mechanism)}</p>
+      <p>Place ${esc(lesson.title)} inside that mechanism and trace one concrete unit of work through it. Name the representation at every boundary, the state that persists, and the rule that changes it. This is the point where a memorized term becomes an engineering model.</p>
       <div class="warning"><strong>Do not stop at the analogy</strong><p>${esc(c.misconception)} An analogy helps you enter the topic; measurements and concrete behavior tell you where the analogy ends.</p></div>
     </section>
 
@@ -780,18 +1046,15 @@ function renderLesson(lesson, index) {
     <section class="lesson-section" id="examples-${id}"><p class="section-kicker">04 · Examples</p><h2>See the concept at three levels</h2>
       <div class="example-grid">
         <article><p class="example-label">Everyday comparison</p><h3>Use a familiar system</h3><p>Imagine ${esc(p.analogy)}. Identify the thing being requested, the rule that decides what happens, the place where state is stored, and the signal that tells you the work succeeded. That structure is the bridge to ${esc(lesson.title)}.</p></article>
-        <article><p class="example-label">Small technical example</p><h3>Write the contract first</h3><pre><code>// Model ${esc(lesson.title)} before choosing a library
-input  = captureInput()
-state  = readCurrentState()
-result = applyRule(input, state)
-assert(result.isObservable)
-record(result, cost, errors)</code></pre><p>This pseudocode is deliberately technology-neutral. Replace each line with the concrete operation used in ${esc(lesson.chapter.title)}.</p></article>
+        <article><p class="example-label">Small technical example</p><h3>Inspect a concrete mechanism</h3><pre><code>// ${esc(lesson.number)} — ${esc(lesson.title)}
+${esc(expert.code)}</code></pre><p>Do not copy this fragment mechanically. Annotate every symbol or transition, predict the output, and identify which assumption would make the example incorrect.</p></article>
         <article><p class="example-label">Production example</p><h3>Make hidden behavior visible</h3><p>In ${esc(p.system)}, add an identifier to one unit of work. Record its input category, important state transition, duration, output category, and error. The resulting trace shows where ${esc(lesson.title)} participates in the larger system.</p></article>
       </div>
     </section>
 
     <section class="lesson-section" id="internals-${id}"><p class="section-kicker">05 · Under the hood</p><h2>What actually happens</h2>
-      <ol class="process-list"><li><strong>Receive:</strong> a caller provides input under an expected contract.</li><li><strong>Validate:</strong> the system rejects malformed, unsafe, unavailable, or out-of-range input.</li><li><strong>Resolve:</strong> the implementation reads the state or dependency needed for ${esc(lesson.title)}.</li><li><strong>Transform:</strong> rules change data, choose a path, or coordinate another component.</li><li><strong>Commit:</strong> the result becomes visible, durable, or available to the next stage.</li><li><strong>Observe:</strong> the system exposes ${esc(p.evidence)} so a person can verify the result.</li></ol>
+      <p>${esc(expert.mechanism)}</p>
+      <ol class="process-list">${expert.flow.map((stage, stageIndex) => `<li><strong>${esc(stage)}:</strong> ${stageIndex === 0 ? `Identify the exact input and representation entering ${esc(lesson.title)}.` : stageIndex === 1 ? `Apply the rules and constraints that define ${esc(lesson.title)}.` : stageIndex === 2 ? "Follow state changes, resource use, and calls across the implementation boundary." : `Verify the outcome with ${esc(p.evidence)}.`}</li>`).join("")}</ol>
       <h3>Questions an engineer asks</h3><p>Who owns the state? What is the unit of work? Which operation can be repeated safely? What happens when execution stops halfway? Where is the slowest boundary? Which guarantee is essential, and which is merely convenient?</p>
       <h3>Trade-offs</h3><div class="tradeoff-table"><div><strong>Simplicity</strong><span>Fewer moving parts are easier to explain and debug.</span></div><div><strong>Performance</strong><span>Extra indexing, caching, parallelism, or specialization can reduce time but add state.</span></div><div><strong>Correctness</strong><span>Stronger validation and guarantees cost work but prevent ambiguous results.</span></div><div><strong>Operability</strong><span>Logs and measurements cost storage and attention but shorten investigations.</span></div></div>
     </section>
@@ -803,7 +1066,7 @@ record(result, cost, errors)</code></pre><p>This pseudocode is deliberately tech
     </section>
 
     <section class="lesson-section" id="case-${id}"><p class="section-kicker">07 · Real-world problem</p><h2>Investigate a failure under pressure</h2>
-      <div class="case-study"><p><strong>Scenario:</strong> ${esc(p.stakeholder)} reports that a previously reliable action is now slow or incorrect for some inputs. The first guess blames ${esc(lesson.title)}, but there is no evidence yet.</p>
+      <div class="case-study"><p><strong>Scenario:</strong> ${esc(p.stakeholder)} reports a failure related to ${esc(lesson.title)}. ${esc(expert.failure)} The first explanation sounds plausible, but the team has not yet located the earliest broken boundary.</p>
       <h3>Your task</h3><ol><li>Define the expected behavior and the affected unit of work.</li><li>Collect a good case and a bad case with the same observation points.</li><li>Find the earliest step where their state diverges.</li><li>Form three hypotheses: input, mechanism, and dependency.</li><li>Run the cheapest test that can eliminate one hypothesis.</li><li>Propose a fix, a regression check, and one production signal.</li></ol>
       <h3>Decision record</h3><p>Write five short lines: context, evidence, decision, trade-off, and follow-up. This turns an isolated fix into reusable engineering knowledge.</p></div>
     </section>
@@ -832,14 +1095,18 @@ record(result, cost, errors)</code></pre><p>This pseudocode is deliberately tech
 
 function styles() {
   return `:root {
-  --bg: #f7f5ef;
+  --bg: #f5f7fb;
   --panel: #ffffff;
-  --ink: #1f2933;
-  --muted: #667085;
-  --line: #d9d3c4;
-  --accent: #0f766e;
-  --accent-2: #7c3aed;
-  --code: #102a43;
+  --ink: #172033;
+  --muted: #637083;
+  --line: #dce2ec;
+  --accent: #0c7c73;
+  --accent-soft: #e5f5f2;
+  --accent-2: #6d4aff;
+  --code: #10233f;
+  --sidebar: #0b1426;
+  --sidebar-2: #101d34;
+  --shadow: 0 18px 50px rgba(24, 39, 75, .08);
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -847,54 +1114,124 @@ body {
   margin: 0;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 85% 0%, rgba(109,74,255,.08), transparent 28rem),
+    radial-gradient(circle at 10% 25%, rgba(12,124,115,.07), transparent 24rem),
+    var(--bg);
   line-height: 1.55;
 }
 a { color: inherit; }
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
-  width: 310px;
+  width: 336px;
   overflow: auto;
-  border-right: 1px solid var(--line);
-  background: #fbfaf6;
-  padding: 22px 18px;
+  border-right: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, var(--sidebar), var(--sidebar-2));
+  color: #d8e3f4;
+  padding: 20px 16px 28px;
 }
 .brand {
-  display: grid;
-  gap: 2px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
   text-decoration: none;
-  margin-bottom: 18px;
+  margin: 0 4px 16px;
 }
-.brand strong { font-size: 1.1rem; }
-.brand span { color: var(--muted); font-size: .9rem; }
-.sidebar nav {
+.brand-mark {
   display: grid;
-  gap: 4px;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1ac7b7, #7658ff);
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 8px 24px rgba(26,199,183,.2);
 }
-.sidebar nav a {
+.brand-copy { display: grid; }
+.brand-copy strong { color: white; font-size: 1.02rem; }
+.brand-copy small { color: #91a4bf; font-size: .76rem; }
+.toc-link {
+  display: block;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  color: #b8c8dc;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+  border-radius: 9px;
+  text-decoration: none;
+  font-size: .83rem;
+}
+.tree-nav { display: grid; gap: 7px; }
+.tree-nav details { margin: 0; }
+.tree-nav summary {
+  cursor: pointer;
+  list-style: none;
+  border-radius: 8px;
+  transition: background .18s ease, color .18s ease;
+}
+.tree-nav summary::-webkit-details-marker { display: none; }
+.tree-nav summary::before {
+  content: "›";
+  display: inline-block;
+  margin-right: 7px;
+  color: #7f94b0;
+  transition: transform .16s ease;
+}
+.tree-nav details[open] > summary::before { transform: rotate(90deg); }
+.nav-part > summary {
+  padding: 9px 10px;
+  color: #8fa4c0;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.nav-part.active > summary,
+.nav-part > summary:hover { color: white; background: rgba(255,255,255,.06); }
+.nav-chapters { display: grid; gap: 3px; margin: 3px 0 9px 8px; padding-left: 8px; border-left: 1px solid rgba(255,255,255,.09); }
+.nav-chapter > summary {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 6px;
+  padding: 7px 8px;
+  color: #bac8da;
+  font-size: .82rem;
+}
+.nav-chapter > summary::before { display: none; }
+.nav-chapter > summary span { color: #53d4c7; font-variant-numeric: tabular-nums; font-weight: 800; }
+.nav-chapter.active > summary { color: white; background: rgba(83,212,199,.12); }
+.nav-overview,
+.nav-lesson {
+  display: grid;
+  text-decoration: none;
+  border-radius: 7px;
+}
+.nav-overview { margin: 2px 8px 6px 36px; color: #8fa4c0; font-size: .76rem; }
+.nav-overview:hover { color: #65e0d4; }
+.nav-section { margin-left: 12px !important; }
+.nav-section > summary {
   display: grid;
   grid-template-columns: 38px 1fr;
-  gap: 8px;
-  align-items: baseline;
-  padding: 8px 9px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: #344054;
-  font-size: .9rem;
+  padding: 6px 8px;
+  color: #9eb0c7;
+  font-size: .75rem;
 }
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #e7f4f1;
-  color: #0f5f59;
+.nav-section > summary::before { display: none; }
+.nav-section > summary span { color: #8c79ff; font-weight: 800; }
+.nav-lessons { display: grid; margin: 2px 0 6px 14px; padding-left: 8px; border-left: 1px solid rgba(255,255,255,.08); }
+.nav-lesson {
+  grid-template-columns: 48px 1fr;
+  gap: 6px;
+  padding: 5px 7px;
+  color: #93a6bf;
+  font-size: .72rem;
 }
-.sidebar nav span {
-  font-variant-numeric: tabular-nums;
-  color: var(--accent);
-  font-weight: 700;
-}
+.nav-lesson span { color: #6f849e; font-variant-numeric: tabular-nums; }
+.nav-lesson:hover { color: white; background: rgba(255,255,255,.06); }
 .page {
-  margin-left: 310px;
+  margin-left: 336px;
   min-height: 100vh;
   padding: 42px clamp(24px, 5vw, 72px);
 }
@@ -911,6 +1248,29 @@ a { color: inherit; }
 .chapter-hero {
   padding: clamp(30px, 5vw, 62px) 0 28px;
 }
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(38px, 6vw, 76px);
+  color: white;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(14,31,57,.96), rgba(20,54,75,.94)),
+    radial-gradient(circle at 80% 20%, #6d4aff, transparent 40%);
+  box-shadow: 0 28px 80px rgba(16,35,63,.2);
+}
+.hero::after {
+  content: "01 10 11 00";
+  position: absolute;
+  right: -24px;
+  bottom: -28px;
+  color: rgba(255,255,255,.045);
+  font-size: clamp(4rem, 11vw, 10rem);
+  font-weight: 900;
+  letter-spacing: -.06em;
+}
+.hero > * { position: relative; z-index: 1; }
+.hero blockquote { color: #d7e3f0; border-left-color: #55d6c9; }
 .eyebrow {
   color: var(--accent);
   font-size: .8rem;
@@ -954,9 +1314,35 @@ blockquote {
   padding: 9px 12px;
   text-decoration: none;
 }
+.hero-stats span {
+  border-color: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.08);
+  color: #d8e5f1;
+}
+.hero-stats strong { color: white; }
+.reading-paths {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.reading-paths article {
+  position: relative;
+  overflow: hidden;
+  min-height: 154px;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  box-shadow: var(--shadow);
+}
+.reading-paths article > span { color: var(--accent-2); font-size: .75rem; font-weight: 900; }
+.reading-paths strong { display: block; margin: 18px 0 5px; color: var(--code); }
+.reading-paths p { margin: 0; color: var(--muted); font-size: .88rem; }
 .manifesto,
 .chapter-map {
-  background: #102a43;
+  background: linear-gradient(135deg, #102a43, #153b53);
   color: white;
   border-radius: 14px;
   padding: 28px;
@@ -980,9 +1366,9 @@ blockquote {
 .lesson-card {
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 18px;
-  box-shadow: 0 1px 0 rgba(16, 42, 67, .04);
+  border-radius: 15px;
+  padding: 22px;
+  box-shadow: var(--shadow);
 }
 .chapter-title {
   display: inline-block;
@@ -997,17 +1383,45 @@ blockquote {
 .chapter-hero p {
   color: var(--muted);
 }
-.chapter-card ol {
-  margin: 12px 0 0;
-  padding-left: 21px;
+.toc-sections { display: grid; gap: 7px; margin-top: 16px; }
+.toc-section {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #f9fbfd;
 }
-.chapter-card li {
-  margin: 7px 0;
+.toc-section > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  padding: 10px 12px;
+  color: var(--code);
+  font-size: .86rem;
 }
-.chapter-card li span {
-  color: var(--muted);
-  font-size: .85rem;
+.toc-section > summary strong { color: var(--accent-2); margin-right: 5px; }
+.toc-section > summary small { color: var(--muted); white-space: nowrap; }
+.toc-section-body { padding: 0 12px 12px; border-top: 1px solid var(--line); }
+.section-overview-link {
+  display: inline-block;
+  margin: 10px 0 4px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: .78rem;
+  font-weight: 750;
 }
+.toc-section ol { margin: 5px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.toc-section li a {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 8px;
+  padding: 6px 7px;
+  color: #42526a;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: .8rem;
+}
+.toc-section li a:hover { background: var(--accent-soft); color: #075f58; }
+.toc-section li span { color: var(--accent-2); font-variant-numeric: tabular-nums; font-weight: 750; }
 .chapter-map nav {
   display: flex;
   gap: 8px;
@@ -1153,6 +1567,15 @@ blockquote {
 .diagram rect { fill: #173f5f; stroke: #74c9bd; stroke-width: 2; }
 .diagram text { fill: white; font: 700 15px Inter, sans-serif; }
 .diagram text.small { fill: #bcd4e6; font-size: 11px; font-weight: 500; }
+.svg-label {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: white;
+  font: 700 13px Inter, sans-serif;
+  line-height: 1.2;
+  text-align: center;
+}
 .diagram line { stroke: #74c9bd; stroke-width: 2; }
 .diagram marker path { fill: #74c9bd; }
 .diagram > p { color: #d8e5ee; font-size: .9rem; margin: 10px 0 0; }
@@ -1249,9 +1672,14 @@ details p { margin-bottom: 2px; }
   .lesson-grid {
     grid-template-columns: 1fr;
   }
+  .reading-paths { grid-template-columns: 1fr 1fr; }
   .tradeoff-table,
   .lesson-pagination { grid-template-columns: 1fr; }
   .lesson-pagination a.next { text-align: left; }
+}
+@media (max-width: 560px) {
+  .reading-paths { grid-template-columns: 1fr; }
+  .hero { border-radius: 16px; padding: 28px 22px; }
 }
 `;
 }
